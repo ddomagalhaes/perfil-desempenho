@@ -1,17 +1,22 @@
 :root {
-  --bg: #10151b;
-  --surface-1: #1a222c;
-  --surface-2: #212b37;
-  --surface-3: #283340;
-  --line: #2c3743;
-  --line-strong: #3a4753;
-  --text: #eef1f4;
-  --text-muted: #8ea0ae;
-  --teal: #3fa792;
-  --teal-dim: #26493f;
-  --gold: #d9a441;
-  --gold-dim: #4a3c1f;
+  --bg: #fbfdfb;
+  --surface-1: #f2f5f2;
+  --surface-2: #e7ece7;
+  --surface-3: #dce4dc;
+  --line: #d7ded7;
+  --line-strong: #b9c4b9;
+  --text: #22301f;
+  --text-muted: #647560;
+  --teal: #6fcf97;
+  --teal-dim: #e3f5ea;
+  --gold: #a8ddbb;
+  --gold-dim: #eaf7ee;
   --danger: #c4623f;
+
+  /* Chart-only tokens: kept darker/more saturated than the rest of the UI so
+     the wheel and radar data stay the strongest visual element on a light page. */
+  --accent-dark: #1f7a4d;
+  --graph-grid: #9aa69a;
 }
 
 * {
@@ -80,7 +85,7 @@ nav.breadcrumbs {
 }
 
 nav.breadcrumbs a:hover {
-  color: var(--teal);
+  color: var(--accent-dark);
 }
 
 .layout {
@@ -161,16 +166,16 @@ button:hover {
 button.primary {
   background: var(--teal-dim);
   border-color: var(--teal);
-  color: #bfe9dd;
+  color: var(--accent-dark);
 }
 
 button.primary:hover {
-  background: #2f5c50;
+  background: #d6f0de;
 }
 
 button.danger-outline {
   border-color: var(--danger);
-  color: #f1b8a3;
+  color: var(--danger);
 }
 
 button.small {
@@ -222,7 +227,7 @@ button:disabled {
 .list-plain a.list-item.active {
   background: var(--teal-dim);
   border-color: var(--teal);
-  color: #bfe9dd;
+  color: var(--accent-dark);
 }
 
 .list-plain .del {
@@ -289,7 +294,7 @@ button:disabled {
 
 .score-item .val {
   font-family: var(--font-jetbrains), monospace;
-  color: var(--gold);
+  color: var(--accent-dark);
   font-weight: 500;
 }
 
@@ -326,7 +331,7 @@ th:first-child {
 
 tr.avg td {
   font-weight: 600;
-  color: var(--gold);
+  color: var(--accent-dark);
   background: var(--surface-2);
 }
 
@@ -391,7 +396,7 @@ tr.range td {
 }
 
 .info-tooltip-icon:hover {
-  color: var(--teal);
+  color: var(--accent-dark);
   background: none;
 }
 
@@ -431,7 +436,7 @@ tr.range td {
 .legend-card h3 {
   font-size: 14px;
   margin: 0 0 6px;
-  color: var(--gold);
+  color: var(--accent-dark);
 }
 
 .legend-card p {
@@ -450,8 +455,8 @@ tr.range td {
 
   html,
   body {
-    background: #fff;
-    color: #0b0e12;
+    background: #fbfdfb;
+    color: #22301f;
   }
 
   .print-actions {
@@ -462,15 +467,15 @@ tr.range td {
   .score-item,
   .legend-card,
   th {
-    background: #f4f4f4 !important;
+    background: #f2f5f2 !important;
   }
 
   .legend-card h3 {
-    color: #6b4d12;
+    color: #1f7a4d;
   }
 
   .legend-card p {
-    color: #333;
+    color: #647560;
   }
 
   .info-tooltip-icon,
@@ -481,12 +486,12 @@ tr.range td {
   table,
   th,
   td {
-    border-color: #ccc !important;
+    border-color: #d7ded7 !important;
   }
 
   tr.avg td {
-    color: #6b4d12;
-    background: #eee !important;
+    color: #1f7a4d;
+    background: #e7ece7 !important;
   }
 }
 

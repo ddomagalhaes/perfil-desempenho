@@ -2,12 +2,12 @@ import { polar } from "@/lib/wheel/wheel-geometry";
 import type { CompetencyDTO, TeamAverageSeriesDTO } from "@/lib/types";
 
 export const RADAR_SERIES_COLORS = [
-  "#3fa792", // teal (matches wheel accent)
-  "#d9a441", // gold
-  "#6c8fd9", // blue
-  "#b06fc9", // purple
-  "#c4623f", // terracotta
-  "#5fb35f", // green
+  "#1f7a4d", // dark green (matches wheel accent)
+  "#a67c00", // dark goldenrod
+  "#2f5fa8", // dark blue
+  "#8e44ad", // dark purple
+  "#a8442e", // dark terracotta
+  "#2b7a78", // dark teal
 ];
 
 const SIZE = 460;
@@ -68,7 +68,7 @@ export function RadarChart({
             cy={cy}
             r={r}
             fill="none"
-            stroke="var(--line)"
+            stroke="var(--graph-grid)"
             strokeWidth={0.75}
           />
         ))}
@@ -80,7 +80,7 @@ export function RadarChart({
             y1={cy}
             x2={axis.outer.x}
             y2={axis.outer.y}
-            stroke="var(--line)"
+            stroke="var(--graph-grid)"
             strokeWidth={0.75}
           />
         ))}

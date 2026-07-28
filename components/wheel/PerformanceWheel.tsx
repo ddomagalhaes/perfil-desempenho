@@ -35,14 +35,14 @@ export function PerformanceWheel({
           cy={wheel.cy}
           r={r}
           fill="none"
-          stroke="var(--line)"
+          stroke="var(--graph-grid)"
           strokeWidth={0.75}
         />
       ))}
 
       {wheel.sectors.map((sector) => {
         const competencyId = ids[sector.competencyIndex];
-        const fill = sector.filled ? "var(--teal)" : "var(--surface-2)";
+        const fill = sector.filled ? "var(--accent-dark)" : "var(--graph-grid)";
         const opacity = sector.filled ? sector.opacity : 1;
         return (
           <path
@@ -96,7 +96,7 @@ export function PerformanceWheel({
             textAnchor="middle"
             dominantBaseline="middle"
             fontSize={11}
-            fill="var(--gold)"
+            fill="var(--accent-dark)"
             fontFamily="var(--font-jetbrains), monospace"
           >
             {label.score}
