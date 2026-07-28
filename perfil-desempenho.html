@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfil de Desempenho Psicológico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#10151b;
+    --surface-1:#1a222c;
+    --surface-2:#212b37;
+    --surface-3:#283340;
+    --line:#2c3743;
+    --line-strong:#3a4753;
+    --text:#eef1f4;
+    --text-muted:#8ea0ae;
+    --teal:#3fa792;
+    --teal-dim:#26493f;
+    --gold:#d9a441;
+    --gold-dim:#4a3c1f;
+    --danger:#c4623f;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+  }
+  h1,h2,h3,.display{font-family:'Barlow Condensed',sans-serif; font-weight:700; letter-spacing:0.02em;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .wrap{max-width:1180px; margin:0 auto; padding:28px 24px 60px;}
+  header{display:flex; align-items:baseline; justify-content:space-between; gap:16px; border-bottom:1px solid var(--line); padding-bottom:16px; margin-bottom:24px; flex-wrap:wrap;}
+  header h1{font-size:30px; margin:0; text-transform:uppercase;}
+  header p{margin:2px 0 0; color:var(--text-muted); font-size:13px;}
+  .layout{display:grid; grid-template-columns:280px 1fr; gap:24px; align-items:start;}
+  @media (max-width:820px){ .layout{grid-template-columns:1fr;} }
+  .panel{background:var(--surface-1); border:1px solid var(--line); border-radius:6px; padding:18px;}
+  .panel + .panel{margin-top:16px;}
+  .panel h2{font-size:14px; text-transform:uppercase; color:var(--text-muted); margin:0 0 12px; letter-spacing:0.08em; font-weight:600; font-family:'Inter',sans-serif;}
+  label.field{display:block; font-size:12px; color:var(--text-muted); margin-bottom:6px;}
+  textarea, input[type=text]{
+    width:100%; background:var(--surface-2); border:1px solid var(--line-strong); color:var(--text);
+    border-radius:4px; padding:8px 10px; font-family:'Inter',sans-serif; font-size:13px;
+  }
+  textarea{min-height:120px; resize:vertical; line-height:1.5;}
+  button{
+    background:var(--surface-2); border:1px solid var(--line-strong); color:var(--text);
+    border-radius:4px; padding:8px 14px; font-family:'Inter',sans-serif; font-size:13px; cursor:pointer;
+  }
+  button:hover{background:var(--surface-3);}
+  button.primary{background:var(--teal-dim); border-color:var(--teal); color:#bfe9dd;}
+  button.primary:hover{background:#2f5c50;}
+  button.small{padding:4px 8px; font-size:12px;}
+  .row{display:flex; gap:8px; margin-top:10px;}
+  .athlete-list{list-style:none; margin:12px 0 0; padding:0; display:flex; flex-direction:column; gap:4px;}
+  .athlete-list li{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:8px 10px; border-radius:4px; cursor:pointer; border:1px solid transparent; font-size:13px;
+  }
+  .athlete-list li:hover{background:var(--surface-2);}
+  .athlete-list li.active{background:var(--teal-dim); border-color:var(--teal); color:#bfe9dd;}
+  .athlete-list li .del{opacity:0.5; font-size:11px; padding:2px 6px;}
+  .athlete-list li .del:hover{opacity:1; color:var(--danger); background:none; border-color:var(--danger);}
+  .tabs{display:flex; gap:4px; margin-bottom:18px; border-bottom:1px solid var(--line);}
+  .tab{padding:10px 18px; font-size:13px; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; text-transform:uppercase; letter-spacing:0.05em; font-weight:500;}
+  .tab.active{color:var(--text); border-color:var(--teal);}
+  .empty{color:var(--text-muted); font-size:13px; padding:40px 0; text-align:center;}
+  .score-list{display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px; margin-top:16px;}
+  .score-item{background:var(--surface-2); border:1px solid var(--line); border-radius:4px; padding:8px 10px; display:flex; justify-content:space-between; align-items:center; font-size:12px;}
+  .score-item .val{font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:500;}
+  table{width:100%; border-collapse:collapse; font-size:12px; margin-top:18px;}
+  th, td{border:1px solid var(--line); padding:6px 8px; text-align:center;}
+  th{background:var(--surface-2); color:var(--text-muted); font-weight:500; font-size:11px; text-transform:uppercase; letter-spacing:0.03em;}
+  td:first-child, th:first-child{text-align:left; position:sticky; left:0; background:var(--surface-1);}
+  tr.avg td{font-weight:600; color:var(--gold); background:var(--surface-2);}
+  tr.range td{color:var(--text-muted); font-size:11px;}
+  .legend{display:flex; flex-wrap:wrap; gap:10px 16px; margin-top:14px; font-size:12px; color:var(--text-muted);}
+  .legend .sw{display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:middle;}
+  .hint{font-size:11px; color:var(--text-muted); margin-top:10px; line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Perfil de Desempenho Psicológico</h1>
+      <p>Clica nos anéis da roda para pontuar cada competência de 0 a 10 — método de perfilagem de desempenho (Butler).</p>
+    </div>
+    <div class="mono" style="font-size:11px; color:var(--text-muted);" id="save-status">&nbsp;</div>
+  </header>
+
+  <div class="layout">
+    <div>
+      <div class="panel">
+        <h2>Competências</h2>
+        <label class="field">Uma por linha</label>
+        <textarea id="comp-input"></textarea>
+        <div class="row"><button class="primary" id="save-comps">Guardar competências</button></div>
+        <p class="hint">Alterar esta lista mantém as pontuações já registadas para as competências que não mudarem de nome.</p>
+      </div>
+      <div class="panel">
+        <h2>Atletas</h2>
+        <div class="row">
+          <input type="text" id="athlete-input" placeholder="Nome do atleta">
+          <button class="primary" id="add-athlete">Adicionar</button>
+        </div>
+        <ul class="athlete-list" id="athlete-list"></ul>
+      </div>
+    </div>
+
+    <div>
+      <div class="tabs">
+        <div class="tab active" data-tab="individual">Individual</div>
+        <div class="tab" data-tab="equipa">Equipa</div>
+      </div>
+      <div id="tab-individual"></div>
+      <div id="tab-equipa" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'performance-profile-data';
+const DEFAULT_COMPS = ['Confiança','Concentração','Motivação','Controlo Emocional','Gestão da Pressão','Comunicação','Resiliência'];
+
+let state = { competencies: DEFAULT_COMPS.slice(), athletes: [], selectedId: null };
+let saveTimer = null;
+
+function uid(){ return 'a' + Math.random().toString(36).slice(2,9); }
+
+async function loadState(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    if(res && res.value){
+      const parsed = JSON.parse(res.value);
+      state.competencies = parsed.competencies && parsed.competencies.length ? parsed.competencies : DEFAULT_COMPS.slice();
+      state.athletes = parsed.athletes || [];
+      state.selectedId = state.athletes.length ? state.athletes[0].id : null;
+    }
+  }catch(e){
+    // sem dados guardados ainda — usa os valores por omissão
+  }
+  render();
+}
+
+function scheduleSave(){
+  const el = document.getElementById('save-status');
+  el.textContent = 'A guardar…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async ()=>{
+    try{
+      const ok = await window.storage.set(STORAGE_KEY, JSON.stringify({competencies:state.competencies, athletes:state.athletes}), false);
+      el.textContent = ok ? 'Guardado' : 'Falha ao guardar';
+    }catch(e){
+      el.textContent = 'Falha ao guardar';
+    }
+  }, 400);
+}
+
+function polar(cx,cy,r,angleDeg){
+  const rad = (angleDeg-90) * Math.PI/180;
+  return { x: cx + r*Math.cos(rad), y: cy + r*Math.sin(rad) };
+}
+
+function annularSector(cx,cy,rIn,rOut,a1,a2){
+  const p1 = polar(cx,cy,rOut,a1), p2 = polar(cx,cy,rOut,a2);
+  const p3 = polar(cx,cy,rIn,a2), p4 = polar(cx,cy,rIn,a1);
+  const large = (a2-a1) <= 180 ? 0 : 1;
+  return `M ${p1.x.toFixed(2)} ${p1.y.toFixed(2)} A ${rOut} ${rOut} 0 ${large} 1 ${p2.x.toFixed(2)} ${p2.y.toFixed(2)} L ${p3.x.toFixed(2)} ${p3.y.toFixed(2)} A ${rIn} ${rIn} 0 ${large} 0 ${p4.x.toFixed(2)} ${p4.y.toFixed(2)} Z`;
+}
+
+function buildWheel(scores, editable){
+  const N = state.competencies.length;
+  if(N === 0) return '<p class="empty">Adiciona competências no painel à esquerda.</p>';
+  const size = 460, cx = size/2, cy = size/2, R = 165, gap = 1.4;
+  const wedge = 360/N;
+  let svg = `<svg viewBox="0 0 ${size} ${size+40}" width="100%" style="max-width:520px; display:block; margin:0 auto;">`;
+
+  // grid rings + numbers on a quiet vertical axis
+  for(let g=2; g<=10; g+=2){
+    const rr = R*g/10;
+    svg += `<circle cx="${cx}" cy="${cy}" r="${rr}" fill="none" stroke="var(--line)" stroke-width="0.75"/>`;
+  }
+
+  for(let i=0;i<N;i++){
+    const name = state.competencies[i];
+    const score = scores[name] || 0;
+    const a1 = i*wedge + gap/2, a2 = (i+1)*wedge - gap/2;
+    for(let ring=1; ring<=10; ring++){
+      const rIn = R*(ring-1)/10, rOut = R*ring/10;
+      const filled = ring <= score;
+      const fill = filled ? 'var(--teal)' : 'var(--surface-2)';
+      const opacity = filled ? (0.35 + 0.065*ring) : 1;
+      const d = annularSector(cx,cy,rIn,rOut,a1,a2);
+      const attrs = editable ? `class="ring" data-comp="${i}" data-ring="${ring}" style="cursor:pointer;"` : '';
+      svg += `<path d="${d}" fill="${fill}" opacity="${filled?opacity:1}" stroke="var(--bg)" stroke-width="1" ${attrs}></path>`;
+    }
+    if(score >= 10){
+      const d = annularSector(cx,cy,R*0.98,R*1.0,a1,a2);
+      svg += `<path d="${d}" fill="none" stroke="var(--gold)" stroke-width="2"></path>`;
+    }
+    // label
+    const mid = (a1+a2)/2;
+    const lp = polar(cx,cy,R+26,mid);
+    const flip = mid > 90 && mid < 270;
+    svg += `<text x="${lp.x.toFixed(1)}" y="${lp.y.toFixed(1)}" transform="rotate(${flip?mid+180:mid} ${lp.x.toFixed(1)} ${lp.y.toFixed(1)})" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="var(--text)" font-family="Inter,sans-serif">${escapeXml(name)}</text>`;
+    const sp = polar(cx,cy,R+42,mid);
+    svg += `<text x="${sp.x.toFixed(1)}" y="${sp.y.toFixed(1)}" transform="rotate(${flip?mid+180:mid} ${sp.x.toFixed(1)} ${sp.y.toFixed(1)})" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="var(--gold)" font-family="JetBrains Mono,monospace">${score}</text>`;
+  }
+  svg += `<circle cx="${cx}" cy="${cy}" r="3" fill="var(--text-muted)"/>`;
+  svg += `</svg>`;
+  return svg;
+}
+
+function escapeXml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderAthleteList(){
+  const ul = document.getElementById('athlete-list');
+  ul.innerHTML = '';
+  if(state.athletes.length === 0){
+    ul.innerHTML = '<li style="color:var(--text-muted); cursor:default;">Sem atletas ainda</li>';
+    return;
+  }
+  state.athletes.forEach(a=>{
+    const li = document.createElement('li');
+    li.className = a.id === state.selectedId ? 'active' : '';
+    li.innerHTML = `<span>${escapeXml(a.name)}</span><button class="del" data-id="${a.id}">remover</button>`;
+    li.addEventListener('click', (e)=>{
+      if(e.target.closest('.del')) return;
+      state.selectedId = a.id;
+      render();
+    });
+    li.querySelector('.del').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      state.athletes = state.athletes.filter(x=>x.id!==a.id);
+      if(state.selectedId === a.id) state.selectedId = state.athletes.length ? state.athletes[0].id : null;
+      scheduleSave();
+      render();
+    });
+    ul.appendChild(li);
+  });
+}
+
+function renderIndividual(){
+  const el = document.getElementById('tab-individual');
+  const athlete = state.athletes.find(a=>a.id===state.selectedId);
+  if(!athlete){
+    el.innerHTML = '<p class="empty">Seleciona ou adiciona um atleta para começar a pontuar.</p>';
+    return;
+  }
+  el.innerHTML = `
+    <h3 style="margin:0 0 8px; font-size:22px;">${escapeXml(athlete.name)}</h3>
+    <div id="wheel-holder"></div>
+    <div class="score-list" id="score-list"></div>
+  `;
+  document.getElementById('wheel-holder').innerHTML = buildWheel(athlete.scores, true);
+  const scoreList = document.getElementById('score-list');
+  state.competencies.forEach(name=>{
+    const v = athlete.scores[name] || 0;
+    const div = document.createElement('div');
+    div.className = 'score-item';
+    div.innerHTML = `<span>${escapeXml(name)}</span><span class="val">${v}/10</span>`;
+    scoreList.appendChild(div);
+  });
+  el.querySelectorAll('.ring').forEach(ring=>{
+    ring.addEventListener('click', ()=>{
+      const compIdx = parseInt(ring.getAttribute('data-comp'));
+      const clickedRing = parseInt(ring.getAttribute('data-ring'));
+      const name = state.competencies[compIdx];
+      const current = athlete.scores[name] || 0;
+      athlete.scores[name] = (current === clickedRing) ? clickedRing - 1 : clickedRing;
+      scheduleSave();
+      renderIndividual();
+    });
+  });
+}
+
+function renderTeam(){
+  const el = document.getElementById('tab-equipa');
+  if(state.athletes.length === 0){
+    el.innerHTML = '<p class="empty">Adiciona atletas e pontua-os para veres os resultados de equipa.</p>';
+    return;
+  }
+  const avgScores = {};
+  state.competencies.forEach(name=>{
+    const vals = state.athletes.map(a=>a.scores[name]||0);
+    avgScores[name] = vals.reduce((s,v)=>s+v,0)/vals.length;
+  });
+
+  let html = `<div id="team-wheel"></div>`;
+  html += buildTeamRadarNote();
+  el.innerHTML = html;
+  document.getElementById('team-wheel').innerHTML = buildWheel(
+    Object.fromEntries(state.competencies.map(n=>[n, Math.round(avgScores[n]*10)/10])), false
+  );
+
+  // table
+  let table = '<table><thead><tr><th>Atleta</th>';
+  state.competencies.forEach(n=> table += `<th>${escapeXml(n)}</th>`);
+  table += '</tr></thead><tbody>';
+  state.athletes.forEach(a=>{
+    table += `<tr><td>${escapeXml(a.name)}</td>`;
+    state.competencies.forEach(n=> table += `<td class="mono">${a.scores[n]||0}</td>`);
+    table += '</tr>';
+  });
+  table += `<tr class="avg"><td>Média</td>`;
+  state.competencies.forEach(n=> table += `<td class="mono">${(Math.round(avgScores[n]*10)/10).toFixed(1)}</td>`);
+  table += '</tr>';
+  table += `<tr class="range"><td>Mín. – Máx.</td>`;
+  state.competencies.forEach(n=>{
+    const vals = state.athletes.map(a=>a.scores[n]||0);
+    table += `<td class="mono">${Math.min(...vals)} – ${Math.max(...vals)}</td>`;
+  });
+  table += '</tr></tbody></table>';
+  el.innerHTML += table;
+}
+
+function buildTeamRadarNote(){
+  return '';
+}
+
+function render(){
+  document.getElementById('comp-input').value = state.competencies.join('\n');
+  renderAthleteList();
+  renderIndividual();
+  renderTeam();
+}
+
+document.getElementById('save-comps').addEventListener('click', ()=>{
+  const lines = document.getElementById('comp-input').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(lines.length === 0) return;
+  state.competencies = lines;
+  scheduleSave();
+  render();
+});
+
+document.getElementById('add-athlete').addEventListener('click', ()=>{
+  const input = document.getElementById('athlete-input');
+  const name = input.value.trim();
+  if(!name) return;
+  const id = uid();
+  state.athletes.push({ id, name, scores:{} });
+  state.selectedId = id;
+  input.value = '';
+  scheduleSave();
+  render();
+});
+document.getElementById('athlete-input').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') document.getElementById('add-athlete').click();
+});
+
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-individual').style.display = tab.dataset.tab==='individual' ? '' : 'none';
+    document.getElementById('tab-equipa').style.display = tab.dataset.tab==='equipa' ? '' : 'none';
+  });
+});
+
+loadState();
+</script>
+</body>
+</html>

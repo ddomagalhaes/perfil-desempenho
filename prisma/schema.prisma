@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Competency {
+  id         String    @id @default(uuid())
+  name       String
+  position   Int
+  archivedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  scores     Score[]
+
+  @@map("competencies")
+}
+
+model Team {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  athletes  Athlete[]
+
+  @@map("teams")
+}
+
+model Athlete {
+  id        String   @id @default(uuid())
+  teamId    String
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  name      String
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  scores    Score[]
+
+  @@index([teamId])
+  @@map("athletes")
+}
+
+model Score {
+  athleteId    String
+  athlete      Athlete    @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  competencyId String
+  competency   Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  value        Int
+  updatedAt    DateTime   @updatedAt
+
+  @@id([athleteId, competencyId])
+  @@map("scores")
+}
