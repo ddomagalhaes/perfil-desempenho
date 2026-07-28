@@ -1,27 +1,34 @@
 import "server-only";
 import { prisma } from "@/lib/db/prisma";
+import type { AreaType } from "@/app/generated/prisma/enums";
 import type { CompetencyDTO, CompetencyInput } from "@/lib/types";
 
-export async function getActiveCompetencies(): Promise<CompetencyDTO[]> {
+export async function getActiveCompetencies(area: AreaType): Promise<CompetencyDTO[]> {
   const rows = await prisma.competency.findMany({
-    where: { archivedAt: null },
-    orderBy: { position: "asc" },
+    where: { archivedAt: null, area },
+    orderBy: { sortOrder: "asc" },
   });
   return rows.map((r) => ({
     id: r.id,
     name: r.name,
     description: r.description,
-    position: r.position,
+    sortOrder: r.sortOrder,
   }));
 }
 
 /**
- * Replaces the full ordered competency list, matching new items against existing
- * active ones by name (case-insensitive) so scores already recorded under an
- * unchanged name are preserved. Names dropped from the list are archived, not
- * deleted.
+ * Replaces the full ordered competency list for the given area, matching new items
+ * against existing active ones (same area, case-insensitive name) so scores already
+ * recorded under an unchanged name are preserved. Names dropped from the list are
+ * archived, not deleted.
+ *
+ * Used directly by the Psychological flat-list editor. The Technical area instead
+ * manages competencies per-position via lib/data/positions.ts, which follows the same
+ * diff-by-name principle but links/unlinks a PositionCompetency row instead of
+ * archiving outright (a technical competency may be shared by several positions).
  */
 export async function replaceCompetencies(
+  area: AreaType,
   items: CompetencyInput[]
 ): Promise<CompetencyDTO[]> {
   const trimmed = items
@@ -30,8 +37,8 @@ export async function replaceCompetencies(
 
   return prisma.$transaction(async (tx) => {
     const existing = await tx.competency.findMany({
-      where: { archivedAt: null },
-      orderBy: { position: "asc" },
+      where: { archivedAt: null, area },
+      orderBy: { sortOrder: "asc" },
     });
     const usedIds = new Set<string>();
     const result: CompetencyDTO[] = [];
@@ -45,16 +52,18 @@ export async function replaceCompetencies(
         usedIds.add(match.id);
         await tx.competency.update({
           where: { id: match.id },
-          data: { name, description, position: i },
+          data: { name, description, sortOrder: i },
         });
-        result.push({ id: match.id, name, description, position: i });
+        result.push({ id: match.id, name, description, sortOrder: i });
       } else {
-        const created = await tx.competency.create({ data: { name, description, position: i } });
+        const created = await tx.competency.create({
+          data: { name, description, area, sortOrder: i },
+        });
         result.push({
           id: created.id,
           name: created.name,
           description: created.description,
-          position: created.position,
+          sortOrder: created.sortOrder,
         });
       }
     }

@@ -14,6 +14,7 @@ export async function POST(request: NextRequest) {
   }
 
   const athlete = await createAthlete(teamId, name);
-  revalidatePath(`/teams/${teamId}`);
+  revalidatePath(`/psychological/teams/${teamId}`);
+  revalidatePath(`/technical/teams/${teamId}`);
   return NextResponse.json(athlete, { status: 201 });
 }

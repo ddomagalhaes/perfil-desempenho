@@ -3,14 +3,20 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { AthleteDTO } from "@/lib/types";
+import { PositionPicker } from "@/components/athletes/PositionPicker";
+import type { AreaSlug } from "@/lib/areas";
+import type { AthleteDTO, PositionDTO } from "@/lib/types";
 
 export function AthleteList({
+  area,
   teamId,
   athletes,
+  positions,
 }: {
+  area: AreaSlug;
   teamId: string;
   athletes: AthleteDTO[];
+  positions?: PositionDTO[];
 }) {
   const [name, setName] = useState("");
   const [pending, setPending] = useState(false);
@@ -63,11 +69,18 @@ export function AthleteList({
         {athletes.map((a) => (
           <li key={a.id}>
             <Link
-              href={`/teams/${teamId}/athletes/${a.id}`}
+              href={`/${area}/teams/${teamId}/athletes/${a.id}`}
               style={{ flex: 1, textDecoration: "none" }}
             >
               {a.name}
             </Link>
+            {positions ? (
+              <PositionPicker
+                athleteId={a.id}
+                positions={positions}
+                currentPositionId={a.positionId}
+              />
+            ) : null}
             <button type="button" className="del" onClick={() => handleDelete(a.id, a.name)}>
               remover
             </button>

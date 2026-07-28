@@ -40,9 +40,11 @@ const DEFAULT_COMPETENCIES = [
 ];
 
 async function main() {
-  const existing = await prisma.competency.count({ where: { archivedAt: null } });
+  const existing = await prisma.competency.count({
+    where: { archivedAt: null, area: "PSYCHOLOGICAL" },
+  });
   if (existing > 0) {
-    console.log(`Já existem ${existing} competências ativas — seed ignorado.`);
+    console.log(`Já existem ${existing} competências psicológicas ativas — seed ignorado.`);
     return;
   }
 
@@ -50,7 +52,8 @@ async function main() {
     data: DEFAULT_COMPETENCIES.map((c, index) => ({
       name: c.name,
       description: c.description,
-      position: index,
+      area: "PSYCHOLOGICAL",
+      sortOrder: index,
     })),
   });
 

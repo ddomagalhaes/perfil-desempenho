@@ -3,49 +3,22 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SaveStatus, type SaveState } from "@/components/layout/SaveStatus";
-import type { CompetencyDTO, CompetencyInput } from "@/lib/types";
-
-type Row = CompetencyInput & { key: string };
-
-let nextKey = 0;
-function makeKey() {
-  nextKey += 1;
-  return `new-${nextKey}`;
-}
+import { CompetencyRowsEditor, type CompetencyRow } from "./CompetencyRowsEditor";
+import type { AreaSlug } from "@/lib/areas";
+import type { CompetencyDTO } from "@/lib/types";
 
 export function CompetencyEditor({
+  area,
   initialCompetencies,
 }: {
+  area: AreaSlug;
   initialCompetencies: CompetencyDTO[];
 }) {
-  const [rows, setRows] = useState<Row[]>(
+  const [rows, setRows] = useState<CompetencyRow[]>(
     initialCompetencies.map((c) => ({ key: c.id, name: c.name, description: c.description }))
   );
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const router = useRouter();
-
-  function updateRow(key: string, patch: Partial<CompetencyInput>) {
-    setRows((prev) => prev.map((r) => (r.key === key ? { ...r, ...patch } : r)));
-  }
-
-  function removeRow(key: string) {
-    setRows((prev) => prev.filter((r) => r.key !== key));
-  }
-
-  function addRow() {
-    setRows((prev) => [...prev, { key: makeKey(), name: "", description: "" }]);
-  }
-
-  function moveRow(key: string, direction: -1 | 1) {
-    setRows((prev) => {
-      const index = prev.findIndex((r) => r.key === key);
-      const target = index + direction;
-      if (index === -1 || target < 0 || target >= prev.length) return prev;
-      const next = [...prev];
-      [next[index], next[target]] = [next[target], next[index]];
-      return next;
-    });
-  }
 
   async function handleSave() {
     const competencies = rows
@@ -58,7 +31,7 @@ export function CompetencyEditor({
       const res = await fetch("/api/competencies", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ competencies }),
+        body: JSON.stringify({ area, competencies }),
       });
       if (!res.ok) throw new Error("save failed");
       setSaveState("saved");
@@ -70,61 +43,7 @@ export function CompetencyEditor({
 
   return (
     <div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {rows.map((row, i) => (
-          <div key={row.key} className="panel" style={{ padding: 12 }}>
-            <div className="row" style={{ marginTop: 0, alignItems: "center" }}>
-              <input
-                type="text"
-                placeholder="Nome da competência"
-                value={row.name}
-                onChange={(e) => updateRow(row.key, { name: e.target.value })}
-                style={{ flex: 1 }}
-              />
-              <button
-                type="button"
-                className="small"
-                disabled={i === 0}
-                onClick={() => moveRow(row.key, -1)}
-                aria-label="Mover para cima"
-              >
-                ▲
-              </button>
-              <button
-                type="button"
-                className="small"
-                disabled={i === rows.length - 1}
-                onClick={() => moveRow(row.key, 1)}
-                aria-label="Mover para baixo"
-              >
-                ▼
-              </button>
-              <button
-                type="button"
-                className="small danger-outline"
-                onClick={() => removeRow(row.key)}
-              >
-                remover
-              </button>
-            </div>
-            <label className="field" style={{ marginTop: 8 }}>
-              Descrição (mostrada como legenda e no ⓘ da pontuação)
-            </label>
-            <textarea
-              value={row.description}
-              onChange={(e) => updateRow(row.key, { description: e.target.value })}
-              style={{ minHeight: 60 }}
-              placeholder="Ex.: Grau de confiança do atleta nas suas capacidades para competir."
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="row">
-        <button type="button" onClick={addRow}>
-          Adicionar competência
-        </button>
-      </div>
+      <CompetencyRowsEditor rows={rows} onChange={setRows} />
 
       <div className="row" style={{ alignItems: "center" }}>
         <button type="button" className="primary" onClick={handleSave}>

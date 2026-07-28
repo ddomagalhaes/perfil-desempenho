@@ -20,8 +20,10 @@ export async function PUT(request: NextRequest) {
 
   const athlete = await prisma.athlete.findUnique({ where: { id: athleteId } });
   if (athlete) {
-    revalidatePath(`/teams/${athlete.teamId}`);
-    revalidatePath(`/teams/${athlete.teamId}/athletes/${athleteId}`);
+    for (const area of ["psychological", "technical"]) {
+      revalidatePath(`/${area}/teams/${athlete.teamId}`);
+      revalidatePath(`/${area}/teams/${athlete.teamId}/athletes/${athleteId}`);
+    }
   }
 
   return NextResponse.json({ value: clamped });

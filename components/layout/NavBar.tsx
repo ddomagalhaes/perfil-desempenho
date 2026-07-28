@@ -2,34 +2,52 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AREA_LABELS, AREA_SLUGS, isAreaSlug, type AreaSlug } from "@/lib/areas";
 
-const LINKS = [
-  { href: "/teams", label: "Equipas" },
-  { href: "/competencies", label: "Competências" },
-  { href: "/legend", label: "Legenda" },
-  { href: "/compare", label: "Comparar" },
-];
+const DEFAULT_AREA: AreaSlug = "psychological";
+
+function currentAreaFromPathname(pathname: string): AreaSlug {
+  const [, first] = pathname.split("/");
+  return isAreaSlug(first) ? first : DEFAULT_AREA;
+}
 
 export function NavBar() {
   const pathname = usePathname();
+  const area = currentAreaFromPathname(pathname);
+
+  const sectionLinks = [
+    { href: `/${area}/competencies`, label: area === "technical" ? "Posições" : "Competências" },
+    { href: `/${area}/legend`, label: "Legenda" },
+    { href: `/${area}/compare`, label: "Comparar" },
+  ];
 
   return (
-    <div className="tabs">
-      {LINKS.map((link) => {
-        const active =
-          link.href === "/teams"
-            ? pathname === "/teams" || pathname.startsWith("/teams/")
-            : pathname.startsWith(link.href);
-        return (
+    <div>
+      <div className="tabs">
+        {AREA_SLUGS.map((slug) => (
+          <Link
+            key={slug}
+            href={`/${slug}/competencies`}
+            className={area === slug ? "tab active" : "tab"}
+          >
+            {AREA_LABELS[slug]}
+          </Link>
+        ))}
+      </div>
+      <div className="tabs">
+        <Link href="/teams" className={pathname === "/teams" ? "tab active" : "tab"}>
+          Equipas
+        </Link>
+        {sectionLinks.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className={active ? "tab active" : "tab"}
+            className={pathname.startsWith(link.href) ? "tab active" : "tab"}
           >
             {link.label}
           </Link>
-        );
-      })}
+        ))}
+      </div>
     </div>
   );
 }

@@ -10,17 +10,48 @@ datasource db {
   provider = "postgresql"
 }
 
+enum AreaType {
+  PSYCHOLOGICAL
+  TECHNICAL
+}
+
 model Competency {
   id          String    @id @default(uuid())
+  area        AreaType
   name        String
   description String    @default("")
-  position    Int
+  sortOrder   Int
   archivedAt  DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   scores      Score[]
+  positions   PositionCompetency[]
 
   @@map("competencies")
+}
+
+model Position {
+  id           String    @id @default(uuid())
+  name         String
+  sortOrder    Int
+  archivedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  athletes     Athlete[]
+  competencies PositionCompetency[]
+
+  @@map("positions")
+}
+
+model PositionCompetency {
+  positionId   String
+  position     Position   @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  competencyId String
+  competency   Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  sortOrder    Int        @default(0) // order of this competency within THIS position's wheel (a shared competency can rank differently per position)
+
+  @@id([positionId, competencyId])
+  @@map("position_competencies")
 }
 
 model Team {
@@ -34,16 +65,19 @@ model Team {
 }
 
 model Athlete {
-  id        String   @id @default(uuid())
-  teamId    String
-  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  name      String
-  position  Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  scores    Score[]
+  id         String    @id @default(uuid())
+  teamId     String
+  team       Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  name       String
+  positionId String?
+  position   Position? @relation(fields: [positionId], references: [id], onDelete: SetNull)
+  sortOrder  Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  scores     Score[]
 
   @@index([teamId])
+  @@index([positionId])
   @@map("athletes")
 }
 

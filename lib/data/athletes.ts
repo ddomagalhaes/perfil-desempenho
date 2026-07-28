@@ -10,7 +10,7 @@ function scoresToMap(scores: { competencyId: string; value: number }[]): ScoreMa
 
 export async function createAthlete(teamId: string, name: string) {
   const count = await prisma.athlete.count({ where: { teamId } });
-  return prisma.athlete.create({ data: { teamId, name: name.trim(), position: count } });
+  return prisma.athlete.create({ data: { teamId, name: name.trim(), sortOrder: count } });
 }
 
 export async function renameAthlete(id: string, name: string) {
@@ -21,12 +21,16 @@ export async function deleteAthlete(id: string) {
   return prisma.athlete.delete({ where: { id } });
 }
 
+export async function setAthletePosition(id: string, positionId: string | null) {
+  return prisma.athlete.update({ where: { id }, data: { positionId } });
+}
+
 export async function getAthleteDetail(
   athleteId: string
 ): Promise<(AthleteDTO & { teamName: string }) | null> {
   const athlete = await prisma.athlete.findUnique({
     where: { id: athleteId },
-    include: { scores: true, team: true },
+    include: { scores: true, team: true, position: true },
   });
   if (!athlete) return null;
 
@@ -35,6 +39,8 @@ export async function getAthleteDetail(
     teamId: athlete.teamId,
     name: athlete.name,
     teamName: athlete.team.name,
+    positionId: athlete.positionId,
+    positionName: athlete.position?.name ?? null,
     scores: scoresToMap(athlete.scores),
   };
 }

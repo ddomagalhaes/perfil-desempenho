@@ -1,12 +1,15 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import type { AreaSlug } from "@/lib/areas";
 import type { TeamSummaryDTO } from "@/lib/types";
 
 export function TeamSelector({
+  area,
   teams,
   selectedIds,
 }: {
+  area: AreaSlug;
   teams: TeamSummaryDTO[];
   selectedIds: string[];
 }) {
@@ -21,7 +24,7 @@ export function TeamSelector({
     const params = new URLSearchParams(searchParams.toString());
     if (next.length > 0) params.set("teams", next.join(","));
     else params.delete("teams");
-    router.push(`/compare?${params.toString()}`);
+    router.push(`/${area}/compare?${params.toString()}`);
   }
 
   if (teams.length === 0) {

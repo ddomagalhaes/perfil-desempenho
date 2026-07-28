@@ -4,7 +4,7 @@ export type CompetencyDTO = {
   id: string;
   name: string;
   description: string;
-  position: number;
+  sortOrder: number;
 };
 
 export type CompetencyInput = {
@@ -12,10 +12,18 @@ export type CompetencyInput = {
   description: string;
 };
 
+export type PositionDTO = {
+  id: string;
+  name: string;
+  sortOrder: number;
+};
+
 export type AthleteDTO = {
   id: string;
   teamId: string;
   name: string;
+  positionId: string | null;
+  positionName: string | null;
   scores: ScoreMap;
 };
 
@@ -44,4 +52,11 @@ export type TeamAverageSeriesDTO = {
   teamId: string;
   teamName: string;
   averages: ScoreMap;
+};
+
+export type PositionGroupDTO = {
+  position: PositionDTO | null; // null = athletes with no position assigned yet
+  athletes: AthleteDTO[];
+  stats: CompetencyStatsDTO[];
+  competencies: CompetencyDTO[];
 };

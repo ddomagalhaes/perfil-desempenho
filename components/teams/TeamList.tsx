@@ -24,7 +24,7 @@ export function TeamList({ teams }: { teams: TeamSummaryDTO[] }) {
       {teams.map((team) => (
         <li key={team.id}>
           <Link
-            href={`/teams/${team.id}`}
+            href={`/psychological/teams/${team.id}`}
             style={{ flex: 1, display: "flex", justifyContent: "space-between", textDecoration: "none" }}
           >
             <span>{team.name}</span>

@@ -15,7 +15,8 @@ export async function PATCH(
 
   const team = await renameTeam(teamId, name);
   revalidatePath("/teams");
-  revalidatePath(`/teams/${teamId}`);
+  revalidatePath(`/psychological/teams/${teamId}`);
+  revalidatePath(`/technical/teams/${teamId}`);
   return NextResponse.json(team);
 }
 
