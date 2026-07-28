@@ -3,7 +3,13 @@ export type ScoreMap = Record<string, number>;
 export type CompetencyDTO = {
   id: string;
   name: string;
+  description: string;
   position: number;
+};
+
+export type CompetencyInput = {
+  name: string;
+  description: string;
 };
 
 export type AthleteDTO = {

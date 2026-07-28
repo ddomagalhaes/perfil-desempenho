@@ -11,13 +11,14 @@ datasource db {
 }
 
 model Competency {
-  id         String    @id @default(uuid())
-  name       String
-  position   Int
-  archivedAt DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  scores     Score[]
+  id          String    @id @default(uuid())
+  name        String
+  description String    @default("")
+  position    Int
+  archivedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  scores      Score[]
 
   @@map("competencies")
 }

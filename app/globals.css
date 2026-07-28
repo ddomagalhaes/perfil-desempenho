@@ -374,6 +374,73 @@ tr.range td {
   margin-bottom: 20px;
 }
 
+.info-tooltip {
+  position: relative;
+  display: inline-block;
+  margin-left: 4px;
+}
+
+.info-tooltip-icon {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.info-tooltip-icon:hover {
+  color: var(--teal);
+  background: none;
+}
+
+.info-tooltip-popover {
+  position: absolute;
+  z-index: 20;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 6px;
+  width: max-content;
+  max-width: 220px;
+  background: var(--surface-3);
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.legend-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.legend-card {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 12px;
+}
+
+.legend-card h3 {
+  font-size: 14px;
+  margin: 0 0 6px;
+  color: var(--gold);
+}
+
+.legend-card p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
 /* Print styles: dedicated /print/* routes only */
 @media print {
   @page {
@@ -393,8 +460,22 @@ tr.range td {
 
   .panel,
   .score-item,
+  .legend-card,
   th {
     background: #f4f4f4 !important;
+  }
+
+  .legend-card h3 {
+    color: #6b4d12;
+  }
+
+  .legend-card p {
+    color: #333;
+  }
+
+  .info-tooltip-icon,
+  .info-tooltip-popover {
+    display: none;
   }
 
   table,
