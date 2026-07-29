@@ -41,7 +41,7 @@ export default async function TeamPage({
     return (
       <>
         <nav className="breadcrumbs">
-          <Link href="/teams">← Equipas</Link>
+          <Link href={`/${area}/teams`}>← Equipas</Link>
         </nav>
         <PageHeader
           title={team.name}
@@ -103,7 +103,7 @@ export default async function TeamPage({
   return (
     <>
       <nav className="breadcrumbs">
-        <Link href="/teams">← Equipas</Link>
+        <Link href={`/${area}/teams`}>← Equipas</Link>
       </nav>
       <PageHeader
         title={team.name}

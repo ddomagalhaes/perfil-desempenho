@@ -24,7 +24,7 @@ export default async function AthletePage({
 
   const breadcrumbs = (
     <nav className="breadcrumbs">
-      <Link href="/teams">Equipas</Link> {" / "}
+      <Link href={`/${area}/teams`}>Equipas</Link> {" / "}
       <Link href={`/${area}/teams/${teamId}`}>{athlete.teamName}</Link>
     </nav>
   );

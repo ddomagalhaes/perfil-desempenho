@@ -16,6 +16,7 @@ export function NavBar() {
   const area = currentAreaFromPathname(pathname);
 
   const sectionLinks = [
+    { href: `/${area}/teams`, label: "Equipas" },
     { href: `/${area}/competencies`, label: area === "technical" ? "Posições" : "Competências" },
     { href: `/${area}/legend`, label: "Legenda" },
     { href: `/${area}/compare`, label: "Comparar" },
@@ -35,9 +36,6 @@ export function NavBar() {
         ))}
       </div>
       <div className="tabs">
-        <Link href="/teams" className={pathname === "/teams" ? "tab active" : "tab"}>
-          Equipas
-        </Link>
         {sectionLinks.map((link) => (
           <Link
             key={link.href}

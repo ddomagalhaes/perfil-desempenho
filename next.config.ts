@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
         destination: "/psychological/teams/:teamId",
         permanent: false,
       },
+      { source: "/teams", destination: "/psychological/teams", permanent: false },
       { source: "/competencies", destination: "/psychological/competencies", permanent: false },
       { source: "/legend", destination: "/psychological/legend", permanent: false },
       { source: "/compare", destination: "/psychological/compare", permanent: false },

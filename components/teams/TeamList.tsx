@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import type { AreaSlug } from "@/lib/areas";
 import type { TeamSummaryDTO } from "@/lib/types";
 
-export function TeamList({ teams }: { teams: TeamSummaryDTO[] }) {
+export function TeamList({ area, teams }: { area: AreaSlug; teams: TeamSummaryDTO[] }) {
   const router = useRouter();
 
   async function handleDelete(id: string, name: string) {
@@ -24,7 +25,7 @@ export function TeamList({ teams }: { teams: TeamSummaryDTO[] }) {
       {teams.map((team) => (
         <li key={team.id}>
           <Link
-            href={`/psychological/teams/${team.id}`}
+            href={`/${area}/teams/${team.id}`}
             style={{ flex: 1, display: "flex", justifyContent: "space-between", textDecoration: "none" }}
           >
             <span>{team.name}</span>

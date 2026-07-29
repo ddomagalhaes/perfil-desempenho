@@ -14,7 +14,8 @@ export async function PATCH(
   }
 
   const team = await renameTeam(teamId, name);
-  revalidatePath("/teams");
+  revalidatePath("/psychological/teams");
+  revalidatePath("/technical/teams");
   revalidatePath(`/psychological/teams/${teamId}`);
   revalidatePath(`/technical/teams/${teamId}`);
   return NextResponse.json(team);
@@ -26,6 +27,7 @@ export async function DELETE(
 ) {
   const { teamId } = await params;
   await deleteTeam(teamId);
-  revalidatePath("/teams");
+  revalidatePath("/psychological/teams");
+  revalidatePath("/technical/teams");
   return NextResponse.json({ ok: true });
 }

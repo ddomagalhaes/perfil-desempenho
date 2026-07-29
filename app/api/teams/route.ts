@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
   }
 
   const team = await createTeam(name);
-  revalidatePath("/teams");
+  revalidatePath("/psychological/teams");
+  revalidatePath("/technical/teams");
   return NextResponse.json(team, { status: 201 });
 }
