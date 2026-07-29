@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProspectDetail } from "@/lib/data/prospects";
 import { getActiveCompetencies } from "@/lib/data/competencies";
@@ -25,7 +26,15 @@ export default async function ProspectDetailPage({
 
   return (
     <>
-      <PageHeader title={prospect.name} subtitle={details} />
+      <PageHeader
+        title={prospect.name}
+        subtitle={details}
+        actions={
+          <Link href={`/scouting/prospects/${prospect.id}/evaluate`} className="primary">
+            Avaliar
+          </Link>
+        }
+      />
       <ProspectNoteEditor prospectId={prospect.id} kpis={kpis} initialNotes={prospect.notes} />
     </>
   );
