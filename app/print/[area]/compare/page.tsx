@@ -5,7 +5,7 @@ import { getPositionCompetencies, listPositions } from "@/lib/data/positions";
 import { RadarChart, RADAR_SERIES_COLORS } from "@/components/radar/RadarChart";
 import { ComparisonTable } from "@/components/teams/ComparisonTable";
 import { PrintButton } from "@/components/print/PrintButton";
-import { areaTypeFromSlug, isAreaSlug, type AreaSlug } from "@/lib/areas";
+import { areaTypeFromSlug, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +17,8 @@ export default async function PrintComparePage({
   searchParams: Promise<{ teams?: string; position?: string }>;
 }) {
   const { area: areaParam } = await params;
-  if (!isAreaSlug(areaParam)) notFound();
-  const area: AreaSlug = areaParam;
+  if (!isTeamAreaSlug(areaParam)) notFound();
+  const area: TeamAreaSlug = areaParam;
 
   const { teams: teamsParam, position: positionParam } = await searchParams;
   const selectedIds = teamsParam ? teamsParam.split(",").filter(Boolean) : [];

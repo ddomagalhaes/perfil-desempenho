@@ -60,3 +60,19 @@ export type PositionGroupDTO = {
   stats: CompetencyStatsDTO[];
   competencies: CompetencyDTO[];
 };
+
+export type NoteMap = Record<string, string>;
+
+export type ProspectDTO = {
+  id: string;
+  name: string;
+  positionId: string | null;
+  positionName: string | null;
+  club: string | null;
+  athleteId: string | null;
+  athleteTeamName: string | null;
+};
+
+export type ProspectDetailDTO = ProspectDTO & {
+  notes: NoteMap;
+};

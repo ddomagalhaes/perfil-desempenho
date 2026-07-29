@@ -4,7 +4,7 @@ import { getActiveCompetencies } from "@/lib/data/competencies";
 import { PerformanceWheel } from "@/components/wheel/PerformanceWheel";
 import { TeamStatsTable } from "@/components/teams/TeamStatsTable";
 import { PrintButton } from "@/components/print/PrintButton";
-import { areaTypeFromSlug, isAreaSlug, type AreaSlug } from "@/lib/areas";
+import { areaTypeFromSlug, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
 
@@ -14,8 +14,8 @@ export default async function PrintTeamPage({
   params: Promise<{ area: string; teamId: string }>;
 }) {
   const { area: areaParam, teamId } = await params;
-  if (!isAreaSlug(areaParam)) notFound();
-  const area: AreaSlug = areaParam;
+  if (!isTeamAreaSlug(areaParam)) notFound();
+  const area: TeamAreaSlug = areaParam;
 
   if (area === "technical") {
     const [team, groups] = await Promise.all([

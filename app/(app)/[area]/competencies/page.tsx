@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Panel } from "@/components/layout/Panel";
 import { CompetencyEditor } from "@/components/competencies/CompetencyEditor";
 import { PositionManager } from "@/components/positions/PositionManager";
-import { areaTypeFromSlug, isAreaSlug, type AreaSlug } from "@/lib/areas";
+import { areaTypeFromSlug, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
 import type { CompetencyDTO } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -16,8 +16,8 @@ export default async function CompetenciesPage({
   params: Promise<{ area: string }>;
 }) {
   const { area: areaParam } = await params;
-  if (!isAreaSlug(areaParam)) notFound();
-  const area: AreaSlug = areaParam;
+  if (!isTeamAreaSlug(areaParam)) notFound();
+  const area: TeamAreaSlug = areaParam;
 
   if (area === "technical") {
     const positions = await listPositions();

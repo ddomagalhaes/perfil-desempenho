@@ -25,6 +25,24 @@ export async function setAthletePosition(id: string, positionId: string | null) 
   return prisma.athlete.update({ where: { id }, data: { positionId } });
 }
 
+/** All athletes across every team, for the "adicionar atleta existente ao scouting"
+ * picker — flags athletes that already have a scouting profile so the UI can hide or
+ * disable them instead of creating a duplicate Prospect link. */
+export async function listAllAthletesForLinking(): Promise<
+  { id: string; name: string; teamName: string; alreadyLinked: boolean }[]
+> {
+  const athletes = await prisma.athlete.findMany({
+    orderBy: [{ team: { name: "asc" } }, { sortOrder: "asc" }],
+    include: { team: { select: { name: true } }, prospect: { select: { id: true } } },
+  });
+  return athletes.map((a) => ({
+    id: a.id,
+    name: a.name,
+    teamName: a.team.name,
+    alreadyLinked: a.prospect !== null,
+  }));
+}
+
 export async function getAthleteDetail(
   athleteId: string
 ): Promise<(AthleteDTO & { teamName: string }) | null> {

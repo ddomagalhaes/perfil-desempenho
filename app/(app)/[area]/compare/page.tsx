@@ -12,7 +12,7 @@ import { TeamSelector } from "@/components/compare/TeamSelector";
 import { PositionSelector } from "@/components/compare/PositionSelector";
 import { RadarChart, RADAR_SERIES_COLORS } from "@/components/radar/RadarChart";
 import { ComparisonTable } from "@/components/teams/ComparisonTable";
-import { areaTypeFromSlug, isAreaSlug, type AreaSlug } from "@/lib/areas";
+import { areaTypeFromSlug, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
 
@@ -24,8 +24,8 @@ export default async function ComparePage({
   searchParams: Promise<{ teams?: string; position?: string }>;
 }) {
   const { area: areaParam } = await params;
-  if (!isAreaSlug(areaParam)) notFound();
-  const area: AreaSlug = areaParam;
+  if (!isTeamAreaSlug(areaParam)) notFound();
+  const area: TeamAreaSlug = areaParam;
 
   const { teams: teamsParam, position: positionParam } = await searchParams;
   const selectedTeamIds = teamsParam ? teamsParam.split(",").filter(Boolean) : [];

@@ -6,7 +6,7 @@ import { PerformanceWheel } from "@/components/wheel/PerformanceWheel";
 import { ScoreList } from "@/components/athletes/ScoreList";
 import { CompetencyLegend } from "@/components/competencies/CompetencyLegend";
 import { PrintButton } from "@/components/print/PrintButton";
-import { areaTypeFromSlug, isAreaSlug, type AreaSlug } from "@/lib/areas";
+import { areaTypeFromSlug, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
 
@@ -16,8 +16,8 @@ export default async function PrintAthletePage({
   params: Promise<{ area: string; athleteId: string }>;
 }) {
   const { area: areaParam, athleteId } = await params;
-  if (!isAreaSlug(areaParam)) notFound();
-  const area: AreaSlug = areaParam;
+  if (!isTeamAreaSlug(areaParam)) notFound();
+  const area: TeamAreaSlug = areaParam;
 
   const athlete = await getAthleteDetail(athleteId);
   if (!athlete) notFound();

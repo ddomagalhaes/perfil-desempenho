@@ -3,7 +3,7 @@ import { getActiveCompetencies } from "@/lib/data/competencies";
 import { getPositionCompetencies, listPositions } from "@/lib/data/positions";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { CompetencyLegend } from "@/components/competencies/CompetencyLegend";
-import { areaTypeFromSlug, isAreaSlug, type AreaSlug } from "@/lib/areas";
+import { areaTypeFromSlug, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
 
@@ -13,8 +13,8 @@ export default async function LegendPage({
   params: Promise<{ area: string }>;
 }) {
   const { area: areaParam } = await params;
-  if (!isAreaSlug(areaParam)) notFound();
-  const area: AreaSlug = areaParam;
+  if (!isTeamAreaSlug(areaParam)) notFound();
+  const area: TeamAreaSlug = areaParam;
 
   if (area === "technical") {
     const positions = await listPositions();

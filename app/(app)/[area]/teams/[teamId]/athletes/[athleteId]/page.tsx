@@ -6,7 +6,7 @@ import { getPositionCompetencies, listPositions } from "@/lib/data/positions";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { AthleteScoreEditor } from "@/components/athletes/AthleteScoreEditor";
 import { PositionPicker } from "@/components/athletes/PositionPicker";
-import { areaTypeFromSlug, isAreaSlug, type AreaSlug } from "@/lib/areas";
+import { areaTypeFromSlug, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
 
@@ -16,8 +16,8 @@ export default async function AthletePage({
   params: Promise<{ area: string; teamId: string; athleteId: string }>;
 }) {
   const { area: areaParam, teamId, athleteId } = await params;
-  if (!isAreaSlug(areaParam)) notFound();
-  const area: AreaSlug = areaParam;
+  if (!isTeamAreaSlug(areaParam)) notFound();
+  const area: TeamAreaSlug = areaParam;
 
   const athlete = await getAthleteDetail(athleteId);
   if (!athlete || athlete.teamId !== teamId) notFound();

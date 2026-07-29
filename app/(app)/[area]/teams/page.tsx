@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Panel } from "@/components/layout/Panel";
 import { CreateTeamForm } from "@/components/teams/CreateTeamForm";
 import { TeamList } from "@/components/teams/TeamList";
-import { AREA_LABELS, isAreaSlug, type AreaSlug } from "@/lib/areas";
+import { AREA_LABELS, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
 
@@ -14,8 +14,8 @@ export default async function TeamsPage({
   params: Promise<{ area: string }>;
 }) {
   const { area: areaParam } = await params;
-  if (!isAreaSlug(areaParam)) notFound();
-  const area: AreaSlug = areaParam;
+  if (!isTeamAreaSlug(areaParam)) notFound();
+  const area: TeamAreaSlug = areaParam;
 
   const teams = await listTeams();
 

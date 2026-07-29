@@ -8,7 +8,7 @@ import { Panel } from "@/components/layout/Panel";
 import { AthleteList } from "@/components/teams/AthleteList";
 import { TeamStatsTable } from "@/components/teams/TeamStatsTable";
 import { PerformanceWheel } from "@/components/wheel/PerformanceWheel";
-import { AREA_LABELS, areaTypeFromSlug, isAreaSlug, type AreaSlug } from "@/lib/areas";
+import { AREA_LABELS, areaTypeFromSlug, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
 
@@ -18,8 +18,8 @@ export default async function TeamPage({
   params: Promise<{ area: string; teamId: string }>;
 }) {
   const { area: areaParam, teamId } = await params;
-  if (!isAreaSlug(areaParam)) notFound();
-  const area: AreaSlug = areaParam;
+  if (!isTeamAreaSlug(areaParam)) notFound();
+  const area: TeamAreaSlug = areaParam;
 
   const printHref = `/print/${area}/team/${teamId}`;
   const exportButton = (
