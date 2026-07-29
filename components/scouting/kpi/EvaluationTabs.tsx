@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import type { GameContext } from "@/lib/scouting-kpi/types";
+import { SaveStatus, type SaveState } from "@/components/layout/SaveStatus";
 import { PerGameEvaluationForm } from "./PerGameEvaluationForm";
 import { PeriodicEvaluationForm } from "./PeriodicEvaluationForm";
 
 interface Props {
+  prospectId: string;
   jogadorNome: string;
   context: GameContext;
   periodoLabel: string;
@@ -13,8 +15,29 @@ interface Props {
 
 type Tab = "por_jogo" | "periodica";
 
-export function EvaluationTabs({ jogadorNome, context, periodoLabel }: Props) {
+export function EvaluationTabs({ prospectId, jogadorNome, context, periodoLabel }: Props) {
   const [tab, setTab] = useState<Tab>("por_jogo");
+  const [saveState, setSaveState] = useState<SaveState>("idle");
+
+  async function submit(body: Record<string, unknown>) {
+    setSaveState("saving");
+    try {
+      const res = await fetch("/api/scouting-evaluations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prospectId, ...body }),
+      });
+      if (!res.ok) throw new Error("save failed");
+      setSaveState("saved");
+    } catch {
+      setSaveState("error");
+    }
+  }
+
+  function switchTab(next: Tab) {
+    setTab(next);
+    setSaveState("idle");
+  }
 
   return (
     <div>
@@ -22,14 +45,14 @@ export function EvaluationTabs({ jogadorNome, context, periodoLabel }: Props) {
         <button
           type="button"
           className={tab === "por_jogo" ? "tab active" : "tab"}
-          onClick={() => setTab("por_jogo")}
+          onClick={() => switchTab("por_jogo")}
         >
           Por jogo
         </button>
         <button
           type="button"
           className={tab === "periodica" ? "tab active" : "tab"}
-          onClick={() => setTab("periodica")}
+          onClick={() => switchTab("periodica")}
         >
           Periódica
         </button>
@@ -39,23 +62,19 @@ export function EvaluationTabs({ jogadorNome, context, periodoLabel }: Props) {
         <PerGameEvaluationForm
           jogadorNome={jogadorNome}
           context={context}
-          onSave={(scores) => {
-            // TODO: persistir a avaliação por jogo assim que a base de dados
-            // tiver um modelo para jogos/avaliações de scouting.
-            console.log("TODO onSave PerGameEvaluationForm", { jogadorNome, context, scores });
-          }}
+          onSave={(scores) => submit({ cadence: "por_jogo", scores, context })}
         />
       ) : (
         <PeriodicEvaluationForm
           jogadorNome={jogadorNome}
           periodoLabel={periodoLabel}
-          onSave={(scores, notas) => {
-            // TODO: persistir a avaliação periódica assim que a base de dados
-            // tiver um modelo para avaliações de scouting.
-            console.log("TODO onSave PeriodicEvaluationForm", { jogadorNome, scores, notas });
-          }}
+          onSave={(scores, notas) => submit({ cadence: "periodica", scores, notas })}
         />
       )}
+
+      <div className="kpi-save-status">
+        <SaveStatus state={saveState} />
+      </div>
     </div>
   );
 }

@@ -98,17 +98,18 @@ model Score {
 }
 
 model Prospect {
-  id         String         @id @default(uuid())
-  name       String
-  positionId String?
-  position   Position?      @relation(fields: [positionId], references: [id], onDelete: SetNull)
-  club       String?
-  athleteId  String?        @unique
-  athlete    Athlete?       @relation(fields: [athleteId], references: [id], onDelete: SetNull)
-  archivedAt DateTime?
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
-  notes      ScoutingNote[]
+  id          String               @id @default(uuid())
+  name        String
+  positionId  String?
+  position    Position?            @relation(fields: [positionId], references: [id], onDelete: SetNull)
+  club        String?
+  athleteId   String?              @unique
+  athlete     Athlete?             @relation(fields: [athleteId], references: [id], onDelete: SetNull)
+  archivedAt  DateTime?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  notes       ScoutingNote[]
+  evaluations ScoutingEvaluation[]
 
   @@map("prospects")
 }
@@ -123,4 +124,27 @@ model ScoutingNote {
 
   @@id([prospectId, competencyId])
   @@map("scouting_notes")
+}
+
+enum EvaluationCadence {
+  POR_JOGO
+  PERIODICA
+}
+
+// Uma submissão do formulário de avaliação psicológica de scouting (sliders
+// 0-10 por KPI). O catálogo de KPIs (peso, nome, cadência) vive em
+// lib/scouting-kpi/kpiData.ts, não na base de dados — por isso "scores" e
+// "gameContext" ficam em Json em vez de linhas normalizadas por KPI.
+model ScoutingEvaluation {
+  id          String            @id @default(uuid())
+  prospectId  String
+  prospect    Prospect          @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  cadence     EvaluationCadence
+  scores      Json // kpiId -> 0-10
+  notas       String            @default("")
+  gameContext Json? // snapshot of GameContext, only set for cadence = POR_JOGO
+  createdAt   DateTime          @default(now())
+
+  @@index([prospectId])
+  @@map("scouting_evaluations")
 }

@@ -33,6 +33,7 @@ export default async function ProspectEvaluatePage({
     <>
       <PageHeader title={`Avaliar — ${prospect.name}`} subtitle={prospect.club ?? undefined} />
       <EvaluationTabs
+        prospectId={prospect.id}
         jogadorNome={prospect.name}
         context={context}
         periodoLabel="últimos 5 jogos"
