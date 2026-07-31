@@ -2,18 +2,13 @@
 
 import { useState } from "react";
 import type { Kpi } from "@/lib/scouting-kpi/types";
+import { KpiCriteriosList } from "./KpiCriterios";
 
 interface Props {
   kpi: Kpi;
   value: number;
   onChange: (value: number) => void;
 }
-
-const CATEGORIAS: { key: keyof Pick<Kpi, "criteriosVideo" | "criteriosAoVivo" | "criteriosInferencial">; titulo: string }[] = [
-  { key: "criteriosVideo", titulo: "Visível em vídeo / Wyscout" },
-  { key: "criteriosAoVivo", titulo: "Requer presença ao vivo / áudio" },
-  { key: "criteriosInferencial", titulo: "Inferencial / juízo agregado" },
-];
 
 export function KpiSliderRow({ kpi, value, onChange }: Props) {
   const [showCriterios, setShowCriterios] = useState(false);
@@ -39,22 +34,7 @@ export function KpiSliderRow({ kpi, value, onChange }: Props) {
           ver critérios
         </button>
       </div>
-      {showCriterios && (
-        <div className="kpi-slider-criterios">
-          {CATEGORIAS.map(({ key, titulo }) => {
-            const items = kpi[key];
-            if (items.length === 0) return null;
-            return (
-              <div key={key} className="kpi-slider-criterios-categoria">
-                <strong>{titulo}</strong>
-                {items.map((c, i) => (
-                  <div key={i}>• {c}</div>
-                ))}
-              </div>
-            );
-          })}
-        </div>
-      )}
+      {showCriterios && <KpiCriteriosList kpi={kpi} />}
     </div>
   );
 }

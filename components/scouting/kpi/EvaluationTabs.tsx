@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { GameContext } from "@/lib/scouting-kpi/types";
 import { SaveStatus, type SaveState } from "@/components/layout/SaveStatus";
 import { PerGameEvaluationForm } from "./PerGameEvaluationForm";
@@ -18,6 +19,7 @@ type Tab = "por_jogo" | "periodica";
 export function EvaluationTabs({ prospectId, jogadorNome, context, periodoLabel }: Props) {
   const [tab, setTab] = useState<Tab>("por_jogo");
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const router = useRouter();
 
   async function submit(body: Record<string, unknown>) {
     setSaveState("saving");
@@ -29,6 +31,7 @@ export function EvaluationTabs({ prospectId, jogadorNome, context, periodoLabel 
       });
       if (!res.ok) throw new Error("save failed");
       setSaveState("saved");
+      router.refresh();
     } catch {
       setSaveState("error");
     }

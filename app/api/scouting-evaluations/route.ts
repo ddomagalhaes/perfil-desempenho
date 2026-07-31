@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { createPerGameEvaluation, createPeriodicEvaluation } from "@/lib/data/scoutingEvaluations";
 
 function isScoreMap(value: unknown): value is Record<string, number> {
@@ -37,5 +38,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  revalidatePath(`/scouting/prospects/${prospectId}/evaluate`);
   return NextResponse.json({ ok: true });
 }

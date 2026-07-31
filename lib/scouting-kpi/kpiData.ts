@@ -190,6 +190,18 @@ export const KPIS: Kpi[] = [
   },
 ];
 
+// Escala geral partilhada por todas as competências: define o que significa cada
+// banda de 2 pontos (frequência/consistência do comportamento). O Excel final do
+// departamento já não define uma banda descritiva própria por competência — os
+// critérios específicos de cada KPI (ver KpiCriterios) dizem "em quê".
+export const BANDAS_GERAIS = [
+  { range: "9-10", label: "Excelente", desc: "presente em quase todas as situações relevantes, sem hesitação" },
+  { range: "7-8", label: "Muito Bom", desc: "presente na maioria das situações, falhas pontuais" },
+  { range: "5-6", label: "Bom", desc: "presente, mas inconsistente entre situações semelhantes" },
+  { range: "3-4", label: "Insuficiente", desc: "raro, mesmo quando a situação o pede" },
+  { range: "0-2", label: "Preocupante", desc: "ausente ou comportamento oposto domina" },
+];
+
 export const KPIS_POR_JOGO = KPIS.filter((k) => k.cadence === "por_jogo");
 export const KPIS_PERIODICAS = KPIS.filter((k) => k.cadence === "periodica");
 
