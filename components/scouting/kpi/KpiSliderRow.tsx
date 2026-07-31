@@ -9,6 +9,12 @@ interface Props {
   onChange: (value: number) => void;
 }
 
+const CATEGORIAS: { key: keyof Pick<Kpi, "criteriosVideo" | "criteriosAoVivo" | "criteriosInferencial">; titulo: string }[] = [
+  { key: "criteriosVideo", titulo: "Visível em vídeo / Wyscout" },
+  { key: "criteriosAoVivo", titulo: "Requer presença ao vivo / áudio" },
+  { key: "criteriosInferencial", titulo: "Inferencial / juízo agregado" },
+];
+
 export function KpiSliderRow({ kpi, value, onChange }: Props) {
   const [showCriterios, setShowCriterios] = useState(false);
 
@@ -29,16 +35,24 @@ export function KpiSliderRow({ kpi, value, onChange }: Props) {
         <span className="kpi-slider-value">{value}</span>
       </div>
       <div className="kpi-slider-meta">
-        <p className="kpi-slider-hint">{kpi.hint}</p>
         <button type="button" onClick={() => setShowCriterios((v) => !v)} className="kpi-slider-toggle">
           ver critérios
         </button>
       </div>
       {showCriterios && (
         <div className="kpi-slider-criterios">
-          {kpi.criterios.map((c, i) => (
-            <div key={i}>• {c}</div>
-          ))}
+          {CATEGORIAS.map(({ key, titulo }) => {
+            const items = kpi[key];
+            if (items.length === 0) return null;
+            return (
+              <div key={key} className="kpi-slider-criterios-categoria">
+                <strong>{titulo}</strong>
+                {items.map((c, i) => (
+                  <div key={i}>• {c}</div>
+                ))}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

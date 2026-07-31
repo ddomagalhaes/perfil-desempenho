@@ -662,12 +662,6 @@ input[type="range"] {
   gap: 8px;
 }
 
-.kpi-slider-hint {
-  margin: 0;
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
 .kpi-slider-toggle {
   background: none;
   border: none;
@@ -688,6 +682,14 @@ input[type="range"] {
   font-size: 11px;
   line-height: 1.6;
   color: var(--text-muted);
+}
+
+.kpi-slider-criterios-categoria + .kpi-slider-criterios-categoria {
+  margin-top: 8px;
+}
+
+.kpi-slider-criterios-categoria strong {
+  color: var(--text);
 }
 
 /* Print styles: dedicated /print/* routes only */

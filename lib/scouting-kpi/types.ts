@@ -1,19 +1,15 @@
 export type Cadence = "por_jogo" | "periodica";
 
-export interface AnchorBand {
-  range: string; // e.g. "9-10"
-  label: string; // e.g. "Excelente"
-  description: string;
-}
-
 export interface Kpi {
   id: string;
   name: string;
   peso: number; // weight, all "por_jogo" + "periodica" weights sum to 100
   cadence: Cadence;
-  hint: string; // short one-line reminder shown under the slider
-  criterios: string[]; // fuller behavioral anchors, shown on "ver critérios"
-  bandas: AnchorBand[]; // 5-band draft scale, for validation with the department
+  // Critérios comportamentais, agrupados pela forma como podem ser observados —
+  // um scout de vídeo não tem acesso ao balneário, por exemplo.
+  criteriosVideo: string[]; // visível em vídeo/Wyscout (imagens de jogo)
+  criteriosAoVivo: string[]; // requer presença ao vivo ou áudio (banco, bastidores)
+  criteriosInferencial: string[]; // juízo agregado a partir de histórico/múltiplas observações
 }
 
 export interface GameContext {
