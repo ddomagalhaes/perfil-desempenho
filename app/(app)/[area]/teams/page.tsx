@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Panel } from "@/components/layout/Panel";
 import { CreateTeamForm } from "@/components/teams/CreateTeamForm";
 import { TeamList } from "@/components/teams/TeamList";
+import { ImportRosterForm } from "@/components/technical/ImportRosterForm";
 import { AREA_LABELS, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +31,11 @@ export default async function TeamsPage({
           <Panel title="Nova equipa">
             <CreateTeamForm />
           </Panel>
+          {area === "technical" && (
+            <Panel title="Importar roster (Google Forms)">
+              <ImportRosterForm teams={teams} />
+            </Panel>
+          )}
         </div>
         <div>
           <Panel title="Equipas">
