@@ -79,6 +79,7 @@ model Athlete {
   updatedAt  DateTime  @updatedAt
   scores     Score[]
   prospect   Prospect?
+  student    Student?
 
   @@index([teamId])
   @@index([positionId])
@@ -147,4 +148,64 @@ model ScoutingEvaluation {
 
   @@index([prospectId])
   @@map("scouting_evaluations")
+}
+
+enum SchoolGroup {
+  POUSADA
+  UAARE
+}
+
+enum SlotKind {
+  LESSON
+  BREAK
+}
+
+// Aluno-atleta da secção Escolar. O horário vive diretamente no aluno: cada
+// aluno tem os seus próprios blocos (TimeSlot), porque escolas diferentes têm
+// horas de entrada, intervalos e durações de aula diferentes. Copiar o horário
+// de um colega duplica blocos e aulas. A ligação a um atleta é opcional.
+model Student {
+  id              String      @id @default(uuid())
+  name            String
+  group           SchoolGroup
+  school          String      @default("")
+  schoolYear      String      @default("")
+  className       String      @default("")
+  includeSaturday Boolean     @default(false)
+  athleteId       String?     @unique
+  athlete         Athlete?    @relation(fields: [athleteId], references: [id], onDelete: SetNull)
+  sortOrder       Int         @default(0)
+  archivedAt      DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  slots           TimeSlot[]
+
+  @@index([group])
+  @@map("students")
+}
+
+model TimeSlot {
+  id        String   @id @default(uuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  startMin  Int // minutos desde as 00:00 (08:15 = 495)
+  endMin    Int
+  kind      SlotKind @default(LESSON)
+  label     String   @default("") // "Intervalo", "Almoço" — só usado em BREAK
+  lessons   Lesson[]
+
+  @@index([studentId])
+  @@map("time_slots")
+}
+
+model Lesson {
+  slotId  String
+  slot    TimeSlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  weekday Int // 1 = segunda … 6 = sábado
+  subject String
+  room    String   @default("")
+  teacher String   @default("")
+
+  @@id([slotId, weekday])
+  @@map("lessons")
 }

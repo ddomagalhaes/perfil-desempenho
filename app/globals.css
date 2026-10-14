@@ -746,3 +746,382 @@ input[type="range"] {
     display: none;
   }
 }
+
+/* Escolar — grelha de horário e vistas de grupo */
+input[type="time"] {
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  color: var(--text);
+  border-radius: 4px;
+  padding: 6px 6px;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 12px;
+}
+
+input[type="number"].compact {
+  width: 64px;
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  color: var(--text);
+  border-radius: 4px;
+  padding: 6px;
+  font-size: 12px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+.sched {
+  table-layout: fixed;
+  margin-top: 0;
+}
+
+.sched th.time,
+.sched td.time {
+  width: 92px;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.sched td.cell {
+  height: 44px;
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 7px;
+  background: var(--bg);
+}
+
+.sched td.cell.lesson {
+  background: var(--teal-dim);
+  border-left: 3px solid var(--teal);
+}
+
+.sched td.cell.cont {
+  border-top-color: transparent;
+}
+
+.sched td.cell.cont .subj {
+  opacity: 0.45;
+}
+
+.sched .subj {
+  display: block;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--accent-dark);
+  line-height: 1.3;
+}
+
+.sched .meta {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+.sched td.cell.editable {
+  cursor: pointer;
+}
+
+.sched td.cell.editable:hover {
+  outline: 2px solid var(--teal);
+  outline-offset: -2px;
+}
+
+.sched td.cell.editable .add {
+  color: var(--line-strong);
+  font-size: 14px;
+}
+
+.sched tr.break td,
+.sched tr.break th {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 11px;
+  height: auto;
+  padding: 3px 8px;
+}
+
+.sched tr.break td.label {
+  text-align: center;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.seg a {
+  padding: 6px 12px;
+  font-size: 12px;
+  text-decoration: none;
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
+
+.seg a + a {
+  border-left: 1px solid var(--line-strong);
+}
+
+.seg a.active {
+  background: var(--teal-dim);
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.toolbar .spacer {
+  flex: 1;
+}
+
+.tl {
+  font-size: 12px;
+}
+
+.tl-row {
+  display: grid;
+  grid-template-columns: 170px 1fr 104px;
+  gap: 10px;
+  align-items: center;
+  padding: 3px 0;
+}
+
+.tl-row + .tl-row {
+  border-top: 1px solid var(--line);
+}
+
+.tl-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.tl-name small {
+  color: var(--text-muted);
+  font-size: 10px;
+  margin-left: 4px;
+}
+
+.tl-track {
+  position: relative;
+  height: 22px;
+  background: var(--surface-2);
+  border-radius: 3px;
+}
+
+.tl-axis {
+  position: relative;
+  height: 16px;
+}
+
+.tl-axis span {
+  position: absolute;
+  transform: translateX(-50%);
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.tl-tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--line);
+}
+
+.tl-bar {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  background: var(--teal);
+  border-radius: 3px;
+}
+
+.tl-range {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 11px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.early {
+  color: var(--accent-dark);
+  font-weight: 700;
+}
+
+.late {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.week td {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.week td:first-child {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 12px;
+}
+
+.slot-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 76px 26px;
+  gap: 4px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.slot-row input[type="time"],
+.slot-row select {
+  width: 100%;
+  padding: 5px 4px;
+  font-size: 12px;
+}
+
+.slot-row .del-btn {
+  padding: 4px 0;
+  font-size: 12px;
+}
+
+.slot-label {
+  margin: -2px 0 6px;
+}
+
+.slot-label input[type="text"] {
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(34, 48, 31, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 16px;
+}
+
+.modal {
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+}
+
+.modal h3 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+.modal .hint {
+  margin: 0 0 12px;
+}
+
+.modal label.field {
+  margin-top: 10px;
+}
+
+.error-text {
+  color: var(--danger);
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.copy-list {
+  max-height: 220px;
+  overflow-y: auto;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.copy-list label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  padding: 3px 4px;
+}
+
+@media print {
+  .sched td.cell,
+  .sched td.cell.lesson,
+  .sched tr.break td,
+  .sched tr.break th,
+  .tl-track,
+  .tl-bar {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sched td.cell {
+    background: #fbfdfb !important;
+  }
+
+  .sched td.cell.lesson {
+    background: #e3f5ea !important;
+    border-left-color: #6fcf97 !important;
+  }
+
+  .sched tr.break td,
+  .sched tr.break th {
+    background: #e7ece7 !important;
+  }
+
+  .sched .subj,
+  .early {
+    color: #1f7a4d;
+  }
+
+  .late {
+    color: #c4623f;
+  }
+
+  .tl-track {
+    background: #e7ece7 !important;
+  }
+
+  .tl-bar {
+    background: #6fcf97 !important;
+  }
+
+  .tl-row,
+  .sched tr {
+    break-inside: avoid;
+  }
+}
