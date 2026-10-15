@@ -12,7 +12,9 @@ export function StudentManager({
   students,
   athletes,
   schools,
+  showList = true,
 }: {
+  showList?: boolean;
   group: SchoolGroup;
   students: StudentDTO[];
   athletes: LinkableAthlete[];
@@ -139,23 +141,24 @@ export function StudentManager({
         </form>
       </div>
 
-      <div className="panel">
-        <h2>Alunos ({students.length})</h2>
-        {students.length === 0 && <p className="hint">Ainda sem alunos neste grupo.</p>}
-        <ul className="list-plain">
-          {students.map((s) => (
-            <li key={s.id}>
-              <Link
-                href={`/school/students/${s.id}`}
-                style={{ flex: 1, display: "flex", flexDirection: "column", textDecoration: "none" }}
-              >
-                <span>
-                  {s.name}
-                  {s.athleteTeamName && (
-                    <span className="mono" style={{ color: "var(--text-muted)", fontSize: 11 }}>
-                      {" "}
-                      · {s.athleteTeamName}
-                    </span>
+      {showList && (
+        <div className="panel">
+          <h2>Alunos ({students.length})</h2>
+          {students.length === 0 && <p className="hint">Ainda sem alunos neste grupo.</p>}
+          <ul className="list-plain">
+            {students.map((s) => (
+              <li key={s.id}>
+                <Link
+                  href={`/school/students/${s.id}`}
+                  style={{ flex: 1, display: "flex", flexDirection: "column", textDecoration: "none" }}
+                >
+                  <span>
+                    {s.name}
+                    {s.athleteTeamName && (
+                      <span className="mono" style={{ color: "var(--text-muted)", fontSize: 11 }}>
+                        {" "}
+                        · {s.athleteTeamName}
+                      </span>
                   )}
                 </span>
                 <span className="mono" style={{ color: "var(--text-muted)", fontSize: 11 }}>
@@ -166,6 +169,7 @@ export function StudentManager({
           ))}
         </ul>
       </div>
+      )}
     </>
   );
 }

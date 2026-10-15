@@ -7,6 +7,7 @@ import {
   formatTime,
   studentClassLabel,
   WEEKDAY_SHORT,
+  type StudentDTO,
   type StudentScheduleDTO,
 } from "@/lib/school/schedule";
 
@@ -188,6 +189,54 @@ export function GroupWeekTable({
             ))}
           </tr>
         ))}
+      </tbody>
+    </table>
+  );
+}
+
+/** Lista simples aluno + escola, agrupada por escola — para grupos sem horários
+ * (UAARE), onde o resumo de entradas/saídas não diz nada. */
+export function SchoolRoster({
+  students,
+  linkStudents = true,
+}: {
+  students: StudentDTO[];
+  linkStudents?: boolean;
+}) {
+  if (students.length === 0) return <p className="empty">Sem alunos neste grupo.</p>;
+
+  const bySchool = new Map<string, StudentDTO[]>();
+  for (const s of students) {
+    const key = s.school || "Sem escola definida";
+    if (!bySchool.has(key)) bySchool.set(key, []);
+    bySchool.get(key)!.push(s);
+  }
+  const schools = [...bySchool.keys()].sort((a, b) => a.localeCompare(b, "pt"));
+
+  return (
+    <table className="roster" style={{ marginTop: 0 }}>
+      <thead>
+        <tr>
+          <th>Aluno</th>
+          <th>Escola</th>
+        </tr>
+      </thead>
+      <tbody>
+        {schools.flatMap((school) =>
+          bySchool
+            .get(school)!
+            .sort((a, b) => a.name.localeCompare(b.name, "pt"))
+            .map((s, i, list) => (
+              <tr key={s.id}>
+                <td>{linkStudents ? <Link href={`/school/students/${s.id}`}>{s.name}</Link> : s.name}</td>
+                {i === 0 && (
+                  <td rowSpan={list.length} className="school">
+                    {school}
+                  </td>
+                )}
+              </tr>
+            ))
+        )}
       </tbody>
     </table>
   );

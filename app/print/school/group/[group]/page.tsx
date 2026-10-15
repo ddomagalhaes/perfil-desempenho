@@ -5,6 +5,7 @@ import {
   ExtremesLegend,
   GroupDayTimeline,
   GroupWeekTable,
+  SchoolRoster,
 } from "@/components/school/GroupSummaries";
 import { GROUP_BY_SLUG, GROUP_LABELS, isGroupSlug, WEEKDAY_LABELS } from "@/lib/school/schedule";
 import { parseGroupView, type GroupViewParams } from "@/lib/school/view";
@@ -30,6 +31,20 @@ export default async function PrintSchoolGroupPage({
 
   const students = await listGroupSchedules(group);
   const v = parseGroupView(await searchParams, students);
+  if (group === "UAARE") {
+    return (
+      <div>
+        <PrintButton />
+        <h1>{GROUP_LABELS[group]}</h1>
+        <p style={{ color: "var(--text-muted)" }}>
+          {students.length} aluno{students.length === 1 ? "" : "s"} — por escola — gerado em{" "}
+          {new Date().toLocaleDateString("pt-PT")}
+        </p>
+        <SchoolRoster students={students} linkStudents={false} />
+      </div>
+    );
+  }
+
   const scope =
     v.view === "day" ? `${WEEKDAY_LABELS[v.day]} — ${SORT_LABELS[v.sort]}` : "resumo semanal";
 

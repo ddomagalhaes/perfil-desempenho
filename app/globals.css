@@ -1078,6 +1078,16 @@ input[type="number"].compact {
   padding: 3px 4px;
 }
 
+.roster td {
+  text-align: left;
+  font-size: 13px;
+}
+
+.roster td.school {
+  vertical-align: top;
+  color: var(--text-muted);
+}
+
 @media print {
   .sched td.cell,
   .sched td.cell.lesson,
