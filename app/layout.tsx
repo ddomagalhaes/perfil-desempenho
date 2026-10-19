@@ -21,9 +21,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Perfil de Desempenho Psicológico",
+  title: "Perfil de Desempenho",
   description:
-    "Ferramenta de perfilagem de desempenho psicológico para equipas desportivas.",
+    "Perfil psicológico, técnico/tático, scouting e horários escolares dos atletas.",
 };
 
 export default function RootLayout({
