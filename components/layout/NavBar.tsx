@@ -2,15 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AREA_LABELS, AREA_SLUGS, isAreaSlug, type AreaSlug } from "@/lib/areas";
+import { AREA_LABELS, isAreaSlug, type AreaSlug } from "@/lib/areas";
 
 /** "school" is a top-level section but not an AreaSlug: it has no competencies,
  * so it stays out of AreaType/AREA_SLUGS and only lives here in the nav. */
 type NavSection = AreaSlug | "school";
 
 const DEFAULT_SECTION: NavSection = "psychological";
-
-const NAV_SECTIONS: NavSection[] = [...AREA_SLUGS, "school"];
 
 const SECTION_LABELS: Record<NavSection, string> = { ...AREA_LABELS, school: "Escolar" };
 
@@ -27,6 +25,8 @@ function currentSectionFromPathname(pathname: string): NavSection {
   return isAreaSlug(first) ? first : DEFAULT_SECTION;
 }
 
+// Só a secção onde estás, não as outras três — trocar de secção é um clique
+// em "Início" (ver AppTopBar), não precisa de estar sempre visível aqui.
 export function NavBar() {
   const pathname = usePathname();
   const section = currentSectionFromPathname(pathname);
@@ -55,29 +55,21 @@ export function NavBar() {
           ];
 
   return (
-    <div>
-      <div className="tabs">
-        {NAV_SECTIONS.map((slug) => (
-          <Link
-            key={slug}
-            href={SECTION_LANDING_HREF[slug]}
-            className={section === slug ? "tab active" : "tab"}
-          >
-            {SECTION_LABELS[slug]}
-          </Link>
-        ))}
-      </div>
-      <div className="tabs">
+    <nav className="app-nav">
+      <div className="nav-row nav-row-secondary">
+        <Link href={SECTION_LANDING_HREF[section]} className="nav-current">
+          {SECTION_LABELS[section]}
+        </Link>
         {sectionLinks.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className={pathname.startsWith(link.href) ? "tab active" : "tab"}
+            className={pathname.startsWith(link.href) ? "nav-pill active" : "nav-pill"}
           >
             {link.label}
           </Link>
         ))}
       </div>
-    </div>
+    </nav>
   );
 }

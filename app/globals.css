@@ -299,6 +299,58 @@ button.tab.active {
   border-color: var(--teal);
 }
 
+/* Navegação principal da app — só a secção onde estás, como pills, mais uma
+   etiqueta da área atual à esquerda (não um trocador: trocar de área é um
+   clique em "Início"). Uma linha só, nada em maiúsculas/sublinhado. */
+.app-nav {
+  margin-bottom: 20px;
+}
+
+.nav-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+}
+
+.nav-current {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-dark);
+  text-decoration: none;
+  padding: 6px 12px 6px 0;
+  margin-right: 6px;
+  border-right: 1px solid var(--line);
+}
+
+.nav-current:hover {
+  text-decoration: underline;
+}
+
+.nav-pill {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav-pill:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.nav-pill.active {
+  background: var(--surface-2);
+  color: var(--text);
+  font-weight: 600;
+}
+
 .empty {
   color: var(--text-muted);
   font-size: 13px;
@@ -799,76 +851,64 @@ input[type="range"] {
 
 /* Página inicial */
 .home {
-  max-width: 1080px;
+  max-width: 860px;
   margin: 0 auto;
-  padding: 28px 24px 72px;
+  padding: 24px 24px 56px;
 }
 
 .home-hero {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 48px 40px 36px;
-  background:
-    radial-gradient(circle at 92% 10%, rgba(111, 207, 151, 0.35), transparent 45%),
-    linear-gradient(135deg, var(--teal-dim), var(--bg) 70%);
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
 }
 
 .home-eyebrow {
-  margin: 0 0 10px;
-  font-size: 12px;
+  margin: 0 0 6px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent-dark);
+  color: var(--text-muted);
 }
 
 .home-hero h1 {
   margin: 0;
-  font-size: clamp(40px, 7vw, 68px);
-  line-height: 1;
-  text-transform: uppercase;
+  font-size: 26px;
+  line-height: 1.2;
 }
 
 .home-lead {
-  max-width: 560px;
-  margin: 16px 0 0;
-  font-size: 16px;
-  line-height: 1.55;
+  max-width: 520px;
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--text-muted);
 }
 
 .home-stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 40px;
-  margin: 32px 0 0;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
+  gap: 8px 28px;
+  margin: 16px 0 0;
 }
 
 .home-stats dt {
   font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--text-muted);
 }
 
 .home-stats dd {
-  margin: 4px 0 0;
-  font-family: var(--font-barlow), sans-serif;
-  font-size: 34px;
-  font-weight: 700;
-  line-height: 1;
+  margin: 2px 0 0;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 18px;
+  font-weight: 600;
   color: var(--accent-dark);
 }
 
 .home-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin-top: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-top: 18px;
 }
 
 .home-card {
@@ -877,39 +917,38 @@ input[type="range"] {
   flex-direction: column;
   background: var(--surface-1);
   border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 22px;
-  transition:
-    transform 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+  border-radius: 10px;
+  padding: 16px;
+  transition: border-color 0.15s ease;
 }
 
 .home-card:hover {
-  transform: translateY(-3px);
   border-color: var(--teal);
-  box-shadow: 0 8px 24px rgba(31, 122, 77, 0.12);
 }
 
 .home-card-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  margin-bottom: 16px;
-  border-radius: 10px;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 10px;
+  border-radius: 8px;
   background: var(--teal-dim);
   color: var(--accent-dark);
 }
 
-.home-card h2 {
-  margin: 0 0 8px;
-  font-size: 24px;
-  text-transform: uppercase;
+.home-card-icon svg {
+  width: 17px;
+  height: 17px;
 }
 
-/* O título é o link principal e estica-se por todo o cartão */
+.home-card h2 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
 .home-card h2 a {
   text-decoration: none;
 }
@@ -918,59 +957,66 @@ input[type="range"] {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 12px;
+  border-radius: 10px;
 }
 
 .home-card-desc {
   margin: 0;
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: 12.5px;
+  line-height: 1.5;
   color: var(--text-muted);
 }
 
 .home-card-stat {
-  margin: 14px 0 0;
+  margin: 10px 0 0;
   font-family: var(--font-jetbrains), monospace;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--accent-dark);
 }
 
 .home-card-links {
-  position: relative; /* acima do link esticado do título */
+  position: relative;
   z-index: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: auto;
-  padding-top: 18px;
+  gap: 5px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
 }
 
 .home-card-links a {
-  padding: 4px 10px;
-  border: 1px solid var(--line-strong);
+  padding: 3px 9px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11.5px;
   text-decoration: none;
-  color: var(--text);
-  background: var(--bg);
+  color: var(--text-muted);
 }
 
 .home-card-links a:hover {
-  border-color: var(--teal);
   background: var(--teal-dim);
   color: var(--accent-dark);
-}
-
-@media (max-width: 600px) {
-  .home-hero {
-    padding: 32px 22px 26px;
-  }
 }
 
 .profile {
   display: flex;
   flex-direction: column;
   gap: 28px;
+}
+
+.profile-details summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--accent-dark);
+  padding: 8px 0;
+}
+
+.profile-details summary:hover {
+  text-decoration: underline;
+}
+
+.profile-details[open] summary {
+  margin-bottom: 4px;
 }
 
 .profile h2 {

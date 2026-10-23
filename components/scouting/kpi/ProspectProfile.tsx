@@ -59,6 +59,8 @@ export function ProspectProfile({ profile }: { profile: ProspectProfileData }) {
   const ordenados = [...comKpis].sort((a, b) => (b.average ?? 0) - (a.average ?? 0));
   const pontosFortes = ordenados.slice(0, 3);
   const aDesenvolver = ordenados.length > 3 ? [...ordenados].reverse().slice(0, 3) : [];
+  const destacadas = new Set([...pontosFortes, ...aDesenvolver].map((k) => k.kpiId));
+  const restantes = profile.kpis.filter((k) => !destacadas.has(k.kpiId));
 
   return (
     <div className="profile">
@@ -74,6 +76,15 @@ export function ProspectProfile({ profile }: { profile: ProspectProfileData }) {
         </p>
       ) : (
         <>
+          {profile.position && (
+            <p className="hint">
+              Onde aparecer &ldquo;média dos prospetos&rdquo;, é só contra os outros {profile.peerCount}{" "}
+              prospeto
+              {profile.peerCount === 1 ? "" : "s"} do clube na posição &ldquo;{profile.position.name}
+              &rdquo; — não é uma comparação com a liga nem com outros clubes.
+            </p>
+          )}
+
           {pontosFortes.length > 0 && (
             <div>
               <h2>Pontos fortes</h2>
@@ -96,21 +107,16 @@ export function ProspectProfile({ profile }: { profile: ProspectProfileData }) {
             </div>
           )}
 
-          <div>
-            <h2>Todas as competências</h2>
-            {profile.position && (
-              <p className="hint">
-                Comparação com {profile.peerCount} outro{profile.peerCount === 1 ? "" : "s"} prospeto
-                {profile.peerCount === 1 ? "" : "s"} na posição &ldquo;{profile.position.name}&rdquo; — não
-                é uma comparação com a liga nem com outros clubes.
-              </p>
-            )}
-            <div className="legend-list">
-              {profile.kpis.map((k) => (
-                <KpiCard key={k.kpiId} kpi={k} />
-              ))}
-            </div>
-          </div>
+          {restantes.length > 0 && (
+            <details className="profile-details">
+              <summary>Ver as restantes {restantes.length} competências</summary>
+              <div className="legend-list">
+                {restantes.map((k) => (
+                  <KpiCard key={k.kpiId} kpi={k} />
+                ))}
+              </div>
+            </details>
+          )}
         </>
       )}
     </div>
