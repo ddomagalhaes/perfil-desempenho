@@ -11,10 +11,11 @@ import { KpiSliderRow } from "./KpiSliderRow";
 interface Props {
   jogadorNome: string;
   context: GameContext;
-  onSave: (scores: Record<string, number>) => void;
+  onSave: (scores: Record<string, number>, context: GameContext) => void;
+  saving?: boolean;
 }
 
-export function PerGameEvaluationForm({ jogadorNome, context, onSave }: Props) {
+export function PerGameEvaluationForm({ jogadorNome, context, onSave, saving }: Props) {
   const [scores, setScores] = useState<Record<string, number>>(
     Object.fromEntries(KPIS_POR_JOGO.map((k) => [k.id, 5]))
   );
@@ -26,11 +27,10 @@ export function PerGameEvaluationForm({ jogadorNome, context, onSave }: Props) {
     <div className="kpi-form">
       <div className="kpi-context-card">
         <p className="name">{jogadorNome}</p>
-        <p className="kpi-context-label">Contexto do jogo — auto-preenchido (editável se faltar dado)</p>
-        <GameContextBadges
-          context={ctx}
-          onMinutoEntradaChange={(minuto) => setCtx((c) => ({ ...c, minutoEntrada: minuto }))}
-        />
+        <p className="kpi-context-label">
+          Contexto do jogo — preenche à mão, ainda não há nenhuma fonte automática
+        </p>
+        <GameContextBadges context={ctx} onChange={(patch) => setCtx((c) => ({ ...c, ...patch }))} />
       </div>
 
       <ScaleLegend />
@@ -49,7 +49,7 @@ export function PerGameEvaluationForm({ jogadorNome, context, onSave }: Props) {
         ))}
       </div>
 
-      <button type="button" onClick={() => onSave(scores)} className="primary">
+      <button type="button" onClick={() => onSave(scores, ctx)} className="primary" disabled={saving}>
         Guardar avaliação
       </button>
     </div>

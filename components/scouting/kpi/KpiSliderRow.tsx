@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Kpi } from "@/lib/scouting-kpi/types";
+import { bandaParaValor, hintParaKpi } from "@/lib/scouting-kpi/kpiData";
 import { KpiCriteriosList } from "./KpiCriterios";
 
 interface Props {
@@ -12,6 +13,8 @@ interface Props {
 
 export function KpiSliderRow({ kpi, value, onChange }: Props) {
   const [showCriterios, setShowCriterios] = useState(false);
+  const banda = bandaParaValor(value);
+  const hint = hintParaKpi(kpi);
 
   return (
     <div className="kpi-slider-row">
@@ -27,9 +30,13 @@ export function KpiSliderRow({ kpi, value, onChange }: Props) {
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
         />
-        <span className="kpi-slider-value">{value}</span>
+        <span className="kpi-slider-value">
+          {value}
+          {banda && <span className="kpi-slider-banda"> · {banda.label}</span>}
+        </span>
       </div>
       <div className="kpi-slider-meta">
+        {hint && <p className="kpi-slider-hint">{hint}</p>}
         <button type="button" onClick={() => setShowCriterios((v) => !v)} className="kpi-slider-toggle">
           ver critérios
         </button>

@@ -30,9 +30,14 @@ export default async function ProspectDetailPage({
         title={prospect.name}
         subtitle={details}
         actions={
-          <Link href={`/scouting/prospects/${prospect.id}/evaluate`} className="primary">
-            Avaliar
-          </Link>
+          <>
+            <Link href={`/scouting/prospects/${prospect.id}/profile`}>
+              <button type="button">Ver perfil</button>
+            </Link>
+            <Link href={`/scouting/prospects/${prospect.id}/evaluate`} className="primary">
+              Avaliar
+            </Link>
+          </>
         }
       />
       <ProspectNoteEditor prospectId={prospect.id} kpis={kpis} initialNotes={prospect.notes} />

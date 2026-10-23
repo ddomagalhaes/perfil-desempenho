@@ -194,7 +194,9 @@ export const KPIS: Kpi[] = [
 // banda de 2 pontos (frequência/consistência do comportamento). O Excel final do
 // departamento já não define uma banda descritiva própria por competência — os
 // critérios específicos de cada KPI (ver KpiCriterios) dizem "em quê".
-export const BANDAS_GERAIS = [
+export type Banda = { range: string; label: string; desc: string };
+
+export const BANDAS_GERAIS: Banda[] = [
   { range: "9-10", label: "Excelente", desc: "presente em quase todas as situações relevantes, sem hesitação" },
   { range: "7-8", label: "Muito Bom", desc: "presente na maioria das situações, falhas pontuais" },
   { range: "5-6", label: "Bom", desc: "presente, mas inconsistente entre situações semelhantes" },
@@ -204,6 +206,25 @@ export const BANDAS_GERAIS = [
 
 export const KPIS_POR_JOGO = KPIS.filter((k) => k.cadence === "por_jogo");
 export const KPIS_PERIODICAS = KPIS.filter((k) => k.cadence === "periodica");
+
+/** A banda geral (ver BANDAS_GERAIS) em que um valor 0-10 cai — usado para
+ * mostrar "5 · Bom" em vez de só o número, sem o scout ter de abrir a legenda. */
+export function bandaParaValor(value: number): Banda | null {
+  return (
+    BANDAS_GERAIS.find((b) => {
+      const [min, max] = b.range.split("-").map(Number);
+      return value >= min && value <= max;
+    }) ?? null
+  );
+}
+
+/** O primeiro critério disponível de um KPI, por ordem de preferência (vídeo >
+ * ao vivo > inferencial), para mostrar como lembrete por baixo do slider sem
+ * exigir um clique em "ver critérios". Reutiliza texto já validado pelo
+ * departamento — não inventa descrição nova. */
+export function hintParaKpi(kpi: Kpi): string | null {
+  return kpi.criteriosVideo[0] ?? kpi.criteriosAoVivo[0] ?? kpi.criteriosInferencial[0] ?? null;
+}
 
 export function pesoTotal(kpis: Kpi[]): number {
   return kpis.reduce((sum, k) => sum + k.peso, 0);

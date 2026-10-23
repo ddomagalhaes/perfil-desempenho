@@ -65,12 +65,14 @@ export function EvaluationTabs({ prospectId, jogadorNome, context, periodoLabel 
         <PerGameEvaluationForm
           jogadorNome={jogadorNome}
           context={context}
-          onSave={(scores) => submit({ cadence: "por_jogo", scores, context })}
+          saving={saveState === "saving"}
+          onSave={(scores, editedContext) => submit({ cadence: "por_jogo", scores, context: editedContext })}
         />
       ) : (
         <PeriodicEvaluationForm
           jogadorNome={jogadorNome}
           periodoLabel={periodoLabel}
+          saving={saveState === "saving"}
           onSave={(scores, notas) => submit({ cadence: "periodica", scores, notas })}
         />
       )}

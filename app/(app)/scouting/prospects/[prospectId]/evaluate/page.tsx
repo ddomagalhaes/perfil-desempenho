@@ -42,9 +42,14 @@ export default async function ProspectEvaluatePage({
         title={`Avaliar — ${prospect.name}`}
         subtitle={prospect.club ?? undefined}
         actions={
-          <Link href="/scouting/kpis-referencia">
-            <button type="button">Ver referência de KPIs</button>
-          </Link>
+          <>
+            <Link href={`/scouting/prospects/${prospect.id}/profile`}>
+              <button type="button">Ver perfil</button>
+            </Link>
+            <Link href="/scouting/kpis-referencia">
+              <button type="button">Ver referência de KPIs</button>
+            </Link>
+          </>
         }
       />
       <EvaluationTabs

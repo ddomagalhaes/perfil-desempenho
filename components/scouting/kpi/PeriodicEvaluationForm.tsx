@@ -8,9 +8,10 @@ interface Props {
   jogadorNome: string;
   periodoLabel: string; // e.g. "últimos 5 jogos (22 jun – 26 jul 2026)"
   onSave: (scores: Record<string, number>, notas: string) => void;
+  saving?: boolean;
 }
 
-export function PeriodicEvaluationForm({ jogadorNome, periodoLabel, onSave }: Props) {
+export function PeriodicEvaluationForm({ jogadorNome, periodoLabel, onSave, saving }: Props) {
   const [scores, setScores] = useState<Record<string, number>>(
     Object.fromEntries(KPIS_PERIODICAS.map((k) => [k.id, 5]))
   );
@@ -48,7 +49,7 @@ export function PeriodicEvaluationForm({ jogadorNome, periodoLabel, onSave }: Pr
         />
       </div>
 
-      <button type="button" onClick={() => onSave(scores, notas)} className="primary">
+      <button type="button" onClick={() => onSave(scores, notas)} className="primary" disabled={saving}>
         Guardar avaliação periódica
       </button>
     </div>
