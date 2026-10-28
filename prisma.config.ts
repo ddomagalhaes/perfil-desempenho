@@ -10,6 +10,13 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    // A CLI (sobretudo "migrate deploy") precisa de uma ligação direta: o
+    // DATABASE_URL de produção passa por pgbouncer em modo transação, que
+    // não aguenta bem o advisory lock de sessão do Prisma Migrate e pode
+    // deixá-lo preso (foi o que aconteceu em 2026-10-28). DATABASE_URL_UNPOOLED
+    // só existe em produção (Neon); localmente cai sempre para DATABASE_URL.
+    // A app em runtime não lê isto — lib/db/prisma.ts liga-se sozinha ao
+    // DATABASE_URL (com pooling), sem passar por aqui.
+    url: process.env["DATABASE_URL_UNPOOLED"] ?? process.env["DATABASE_URL"],
   },
 });
