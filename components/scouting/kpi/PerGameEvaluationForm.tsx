@@ -12,10 +12,11 @@ interface Props {
   jogadorNome: string;
   context: GameContext;
   onSave: (scores: Record<string, number>, context: GameContext) => void;
+  onGeneratePdf: (scores: Record<string, number>, context: GameContext) => void;
   saving?: boolean;
 }
 
-export function PerGameEvaluationForm({ jogadorNome, context, onSave, saving }: Props) {
+export function PerGameEvaluationForm({ jogadorNome, context, onSave, onGeneratePdf, saving }: Props) {
   const [scores, setScores] = useState<Record<string, number>>(
     Object.fromEntries(KPIS_POR_JOGO.map((k) => [k.id, 5]))
   );
@@ -49,9 +50,14 @@ export function PerGameEvaluationForm({ jogadorNome, context, onSave, saving }: 
         ))}
       </div>
 
-      <button type="button" onClick={() => onSave(scores, ctx)} className="primary" disabled={saving}>
-        Guardar avaliação
-      </button>
+      <div className="kpi-form-actions">
+        <button type="button" onClick={() => onSave(scores, ctx)} className="primary" disabled={saving}>
+          Guardar avaliação
+        </button>
+        <button type="button" onClick={() => onGeneratePdf(scores, ctx)} disabled={saving}>
+          Gerar PDF
+        </button>
+      </div>
     </div>
   );
 }

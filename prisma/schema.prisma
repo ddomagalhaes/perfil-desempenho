@@ -144,6 +144,8 @@ model ScoutingEvaluation {
   scores      Json // kpiId -> 0-10
   notas       String            @default("")
   gameContext Json? // snapshot of GameContext, only set for cadence = POR_JOGO
+  avaliador   String            @default("") // nome de quem preencheu, para o cabeçalho do PDF
+  periodo     String            @default("") // label do período avaliado, só para cadence = PERIODICA
   createdAt   DateTime          @default(now())
 
   @@index([prospectId])

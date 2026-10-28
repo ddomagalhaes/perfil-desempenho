@@ -6,22 +6,39 @@ import { KpiSliderRow } from "./KpiSliderRow";
 
 interface Props {
   jogadorNome: string;
-  periodoLabel: string; // e.g. "últimos 5 jogos (22 jun – 26 jul 2026)"
-  onSave: (scores: Record<string, number>, notas: string) => void;
+  periodoLabel: string; // sugestão inicial, ex. "últimos 5 jogos" — editável abaixo
+  onSave: (scores: Record<string, number>, notas: string, periodo: string) => void;
+  onGeneratePdf: (scores: Record<string, number>, notas: string, periodo: string) => void;
   saving?: boolean;
 }
 
-export function PeriodicEvaluationForm({ jogadorNome, periodoLabel, onSave, saving }: Props) {
+export function PeriodicEvaluationForm({
+  jogadorNome,
+  periodoLabel,
+  onSave,
+  onGeneratePdf,
+  saving,
+}: Props) {
   const [scores, setScores] = useState<Record<string, number>>(
     Object.fromEntries(KPIS_PERIODICAS.map((k) => [k.id, 5]))
   );
   const [notas, setNotas] = useState("");
+  const [periodo, setPeriodo] = useState(periodoLabel);
 
   return (
     <div className="kpi-form">
       <div className="kpi-context-card">
         <p className="name">{jogadorNome}</p>
-        <p className="kpi-context-label">Avaliação periódica · {periodoLabel}</p>
+        <label className="field" htmlFor="periodic-periodo">
+          Período avaliado
+        </label>
+        <input
+          id="periodic-periodo"
+          type="text"
+          value={periodo}
+          onChange={(e) => setPeriodo(e.target.value)}
+          placeholder="Ex.: últimos 5 jogos (22 jun – 26 jul)"
+        />
       </div>
 
       <div>
@@ -49,9 +66,19 @@ export function PeriodicEvaluationForm({ jogadorNome, periodoLabel, onSave, savi
         />
       </div>
 
-      <button type="button" onClick={() => onSave(scores, notas)} className="primary" disabled={saving}>
-        Guardar avaliação periódica
-      </button>
+      <div className="kpi-form-actions">
+        <button
+          type="button"
+          onClick={() => onSave(scores, notas, periodo)}
+          className="primary"
+          disabled={saving}
+        >
+          Guardar avaliação periódica
+        </button>
+        <button type="button" onClick={() => onGeneratePdf(scores, notas, periodo)} disabled={saving}>
+          Gerar PDF
+        </button>
+      </div>
     </div>
   );
 }

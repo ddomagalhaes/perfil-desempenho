@@ -463,6 +463,92 @@ tr.range td {
   margin-bottom: 20px;
 }
 
+/* Cabeçalho/contexto/notas/rodapé do PDF de avaliação de scouting
+   (app/print/scouting/evaluation/[evaluationId]) */
+.kpi-print-header {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+  margin-bottom: 18px;
+}
+
+.kpi-print-header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.kpi-print-header p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.kpi-print-context {
+  margin-bottom: 18px;
+}
+
+.kpi-print-context h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+
+.kpi-print-meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px 16px;
+  margin: 0;
+}
+
+.kpi-print-meta dt {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.kpi-print-meta dd {
+  margin: 1px 0 0;
+  font-size: 13px;
+}
+
+.kpi-print-notes {
+  margin-top: 18px;
+}
+
+.kpi-print-notes h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+
+.kpi-print-notes p {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.kpi-print-handwrite {
+  min-height: 50mm;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.kpi-print-footer {
+  margin-top: 24px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.kpi-print-footer p {
+  margin: 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
 .info-tooltip {
   position: relative;
   display: inline-block;
@@ -538,8 +624,22 @@ tr.range td {
   gap: 14px;
 }
 
-.kpi-form > button {
-  width: 100%;
+.kpi-form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.kpi-form-actions button {
+  flex: 1;
+}
+
+.kpi-avaliador-row {
+  max-width: 560px;
+  margin: 0 auto 14px;
+}
+
+.kpi-avaliador-row input {
+  max-width: 260px;
 }
 
 .kpi-context-card {

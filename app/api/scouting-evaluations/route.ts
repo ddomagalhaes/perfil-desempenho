@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
   const prospectId = typeof body?.prospectId === "string" ? body.prospectId : "";
   const cadence = body?.cadence;
   const scores = body?.scores;
+  const avaliador = typeof body?.avaliador === "string" ? body.avaliador : "";
 
   if (!prospectId || !isScoreMap(scores)) {
     return NextResponse.json(
@@ -23,14 +24,16 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  let id: string;
   if (cadence === "por_jogo") {
     if (typeof body?.context !== "object" || body.context === null) {
       return NextResponse.json({ error: "context é obrigatório para cadence=por_jogo." }, { status: 400 });
     }
-    await createPerGameEvaluation({ prospectId, scores, context: body.context });
+    ({ id } = await createPerGameEvaluation({ prospectId, scores, context: body.context, avaliador }));
   } else if (cadence === "periodica") {
     const notas = typeof body?.notas === "string" ? body.notas : "";
-    await createPeriodicEvaluation({ prospectId, scores, notas });
+    const periodo = typeof body?.periodo === "string" ? body.periodo : "";
+    ({ id } = await createPeriodicEvaluation({ prospectId, scores, notas, avaliador, periodo }));
   } else {
     return NextResponse.json(
       { error: "cadence deve ser 'por_jogo' ou 'periodica'." },
@@ -39,5 +42,5 @@ export async function POST(request: NextRequest) {
   }
 
   revalidatePath(`/scouting/prospects/${prospectId}/evaluate`);
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, id });
 }

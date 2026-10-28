@@ -18,22 +18,42 @@ type Tab = "por_jogo" | "periodica";
 
 export function EvaluationTabs({ prospectId, jogadorNome, context, periodoLabel }: Props) {
   const [tab, setTab] = useState<Tab>("por_jogo");
+  const [avaliador, setAvaliador] = useState("");
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const router = useRouter();
 
-  async function submit(body: Record<string, unknown>) {
+  /** Grava a avaliação e devolve o id criado (ou null se falhar) — tanto
+   * "Guardar" como "Gerar PDF" passam por aqui, porque o PDF é sempre gerado
+   * a partir do registo gravado na base de dados, nunca só do estado do ecrã. */
+  async function submit(body: Record<string, unknown>): Promise<string | null> {
     setSaveState("saving");
     try {
       const res = await fetch("/api/scouting-evaluations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prospectId, ...body }),
+        body: JSON.stringify({ prospectId, avaliador, ...body }),
       });
       if (!res.ok) throw new Error("save failed");
+      const data = await res.json();
       setSaveState("saved");
       router.refresh();
+      return typeof data?.id === "string" ? data.id : null;
     } catch {
       setSaveState("error");
+      return null;
+    }
+  }
+
+  async function handleGeneratePdf(body: Record<string, unknown>) {
+    // Abre a aba já aqui, de forma síncrona com o clique — se esperarmos pelo
+    // "await submit(...)" antes de chamar window.open, o browser deixa de o
+    // tratar como aberto a pedido do utilizador e bloqueia o popup.
+    const pdfWindow = window.open("", "_blank");
+    const id = await submit(body);
+    if (id && pdfWindow) {
+      pdfWindow.location.href = `/print/scouting/evaluation/${id}`;
+    } else {
+      pdfWindow?.close();
     }
   }
 
@@ -44,6 +64,19 @@ export function EvaluationTabs({ prospectId, jogadorNome, context, periodoLabel 
 
   return (
     <div>
+      <div className="kpi-avaliador-row">
+        <label className="field" htmlFor="kpi-avaliador">
+          Avaliador
+        </label>
+        <input
+          id="kpi-avaliador"
+          type="text"
+          value={avaliador}
+          onChange={(e) => setAvaliador(e.target.value)}
+          placeholder="O teu nome, para o cabeçalho do PDF"
+        />
+      </div>
+
       <div className="tabs">
         <button
           type="button"
@@ -67,13 +100,19 @@ export function EvaluationTabs({ prospectId, jogadorNome, context, periodoLabel 
           context={context}
           saving={saveState === "saving"}
           onSave={(scores, editedContext) => submit({ cadence: "por_jogo", scores, context: editedContext })}
+          onGeneratePdf={(scores, editedContext) =>
+            handleGeneratePdf({ cadence: "por_jogo", scores, context: editedContext })
+          }
         />
       ) : (
         <PeriodicEvaluationForm
           jogadorNome={jogadorNome}
           periodoLabel={periodoLabel}
           saving={saveState === "saving"}
-          onSave={(scores, notas) => submit({ cadence: "periodica", scores, notas })}
+          onSave={(scores, notas, periodo) => submit({ cadence: "periodica", scores, notas, periodo })}
+          onGeneratePdf={(scores, notas, periodo) =>
+            handleGeneratePdf({ cadence: "periodica", scores, notas, periodo })
+          }
         />
       )}
 

@@ -24,30 +24,75 @@ export async function createPerGameEvaluation(input: {
   prospectId: string;
   scores: Record<string, number>;
   context: GameContext;
-}): Promise<void> {
-  await prisma.scoutingEvaluation.create({
+  avaliador: string;
+}): Promise<{ id: string }> {
+  const created = await prisma.scoutingEvaluation.create({
     data: {
       prospectId: input.prospectId,
       cadence: "POR_JOGO",
       scores: input.scores,
       gameContext: input.context as unknown as Prisma.InputJsonValue,
+      avaliador: input.avaliador,
     },
   });
+  return { id: created.id };
 }
 
 export async function createPeriodicEvaluation(input: {
   prospectId: string;
   scores: Record<string, number>;
   notas: string;
-}): Promise<void> {
-  await prisma.scoutingEvaluation.create({
+  avaliador: string;
+  periodo: string;
+}): Promise<{ id: string }> {
+  const created = await prisma.scoutingEvaluation.create({
     data: {
       prospectId: input.prospectId,
       cadence: "PERIODICA",
       scores: input.scores,
       notas: input.notas,
+      avaliador: input.avaliador,
+      periodo: input.periodo,
     },
   });
+  return { id: created.id };
+}
+
+export type EvaluationDetail = {
+  id: string;
+  cadence: EvaluationCadence;
+  scores: Record<string, number>;
+  notas: string;
+  avaliador: string;
+  periodo: string;
+  gameContext: GameContext | null;
+  createdAt: string;
+  prospectId: string;
+  prospectName: string;
+  prospectPositionName: string | null;
+};
+
+/** Uma avaliação completa, com os dados do prospeto já juntos — usada só pela
+ * página de impressão/PDF, que precisa do nome e posição para o cabeçalho. */
+export async function getEvaluationById(id: string): Promise<EvaluationDetail | null> {
+  const row = await prisma.scoutingEvaluation.findUnique({
+    where: { id },
+    include: { prospect: { include: { position: true } } },
+  });
+  if (!row) return null;
+  return {
+    id: row.id,
+    cadence: row.cadence,
+    scores: row.scores as Record<string, number>,
+    notas: row.notas,
+    avaliador: row.avaliador,
+    periodo: row.periodo,
+    gameContext: (row.gameContext as unknown as GameContext | null) ?? null,
+    createdAt: row.createdAt.toISOString(),
+    prospectId: row.prospectId,
+    prospectName: row.prospect.name,
+    prospectPositionName: row.prospect.position?.name ?? null,
+  };
 }
 
 function average(values: number[]): number | null {
