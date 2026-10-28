@@ -28,6 +28,11 @@ export function ProspectManager({
   const [athleteId, setAthleteId] = useState("");
   const [linking, setLinking] = useState(false);
 
+  const [positionFilter, setPositionFilter] = useState("");
+  const filteredProspects = positionFilter
+    ? prospects.filter((p) => p.positionId === positionFilter)
+    : prospects;
+
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     const trimmed = name.trim();
@@ -152,9 +157,35 @@ export function ProspectManager({
 
       <div>
         <Panel title="Prospetos">
+          <div className="section-filters">
+            <label className="field" htmlFor="prospect-filter-position">
+              Posição
+            </label>
+            <select
+              id="prospect-filter-position"
+              value={positionFilter}
+              onChange={(e) => setPositionFilter(e.target.value)}
+            >
+              <option value="">Todas</option>
+              {positions.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {prospects.length === 0 && <p className="empty">Sem prospetos ainda.</p>}
+          {prospects.length > 0 && filteredProspects.length === 0 && (
+            <div className="empty">
+              <p>Nenhum prospeto nesta posição.</p>
+              <button type="button" onClick={() => setPositionFilter("")}>
+                Limpar filtro
+              </button>
+            </div>
+          )}
           <ul className="list-plain">
-            {prospects.map((p) => (
+            {filteredProspects.map((p) => (
               <li key={p.id}>
                 <Link
                   href={`/scouting/prospects/${p.id}`}

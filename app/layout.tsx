@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Barlow_Condensed, Inter, JetBrains_Mono } from "next/font/google";
+import { SaveStatusProvider } from "@/components/layout/SaveStatusProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -36,7 +37,9 @@ export default function RootLayout({
       lang="pt"
       className={`${inter.variable} ${barlowCondensed.variable} ${jetbrainsMono.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <SaveStatusProvider>{children}</SaveStatusProvider>
+      </body>
     </html>
   );
 }

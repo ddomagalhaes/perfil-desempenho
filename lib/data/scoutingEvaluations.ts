@@ -70,6 +70,10 @@ export type EvaluationDetail = {
   prospectId: string;
   prospectName: string;
   prospectPositionName: string | null;
+  /** Pontuações da avaliação anterior do mesmo prospeto E da mesma cadência
+   * (nunca comparamos "por jogo" com "periódica") — null se esta for a
+   * primeira. Usado no PDF para mostrar a variação por competência. */
+  previousScores: Record<string, number> | null;
 };
 
 /** Uma avaliação completa, com os dados do prospeto já juntos — usada só pela
@@ -80,6 +84,17 @@ export async function getEvaluationById(id: string): Promise<EvaluationDetail | 
     include: { prospect: { include: { position: true } } },
   });
   if (!row) return null;
+
+  const previous = await prisma.scoutingEvaluation.findFirst({
+    where: {
+      prospectId: row.prospectId,
+      cadence: row.cadence,
+      createdAt: { lt: row.createdAt },
+    },
+    orderBy: { createdAt: "desc" },
+    select: { scores: true },
+  });
+
   return {
     id: row.id,
     cadence: row.cadence,
@@ -92,6 +107,7 @@ export async function getEvaluationById(id: string): Promise<EvaluationDetail | 
     prospectId: row.prospectId,
     prospectName: row.prospect.name,
     prospectPositionName: row.prospect.position?.name ?? null,
+    previousScores: (previous?.scores as Record<string, number> | undefined) ?? null,
   };
 }
 

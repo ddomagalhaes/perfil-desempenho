@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { GameContext } from "@/lib/scouting-kpi/types";
 import { SaveStatus, type SaveState } from "@/components/layout/SaveStatus";
+import { useGlobalSaveStatus } from "@/components/layout/SaveStatusProvider";
+import { useLocalStorageValue } from "@/lib/useLocalStorageValue";
 import { PerGameEvaluationForm } from "./PerGameEvaluationForm";
 import { PeriodicEvaluationForm } from "./PeriodicEvaluationForm";
 
@@ -16,17 +18,30 @@ interface Props {
 
 type Tab = "por_jogo" | "periodica";
 
+const USER_NAME_KEY = "perfil-desempenho:nome-utilizador";
+
 export function EvaluationTabs({ prospectId, jogadorNome, context, periodoLabel }: Props) {
   const [tab, setTab] = useState<Tab>("por_jogo");
-  const [avaliador, setAvaliador] = useState("");
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const router = useRouter();
+  const globalSaveStatus = useGlobalSaveStatus();
+
+  // Pré-preenche com o nome já guardado na barra de topo, se existir — o
+  // scout continua a poder mudá-lo por avaliação. useSyncExternalStore em vez
+  // de useEffect+setState para ler o localStorage sem mismatch de hidratação
+  // (o servidor nunca vê o localStorage, por isso começa sempre em branco).
+  const storedName = useLocalStorageValue(USER_NAME_KEY);
+  const [avaliadorOverride, setAvaliadorOverride] = useState<string | null>(null);
+  const avaliador = avaliadorOverride ?? storedName ?? "";
 
   /** Grava a avaliação e devolve o id criado (ou null se falhar) — tanto
    * "Guardar" como "Gerar PDF" passam por aqui, porque o PDF é sempre gerado
-   * a partir do registo gravado na base de dados, nunca só do estado do ecrã. */
+   * a partir do registo gravado na base de dados, nunca só do estado do ecrã.
+   * Reporta à barra de topo (useGlobalSaveStatus) com o mesmo valor que
+   * mostra localmente, nunca um estado inventado à parte. */
   async function submit(body: Record<string, unknown>): Promise<string | null> {
     setSaveState("saving");
+    globalSaveStatus.report("saving");
     try {
       const res = await fetch("/api/scouting-evaluations", {
         method: "POST",
@@ -36,10 +51,12 @@ export function EvaluationTabs({ prospectId, jogadorNome, context, periodoLabel 
       if (!res.ok) throw new Error("save failed");
       const data = await res.json();
       setSaveState("saved");
+      globalSaveStatus.report("saved");
       router.refresh();
       return typeof data?.id === "string" ? data.id : null;
     } catch {
       setSaveState("error");
+      globalSaveStatus.report("error");
       return null;
     }
   }
@@ -72,7 +89,7 @@ export function EvaluationTabs({ prospectId, jogadorNome, context, periodoLabel 
           id="kpi-avaliador"
           type="text"
           value={avaliador}
-          onChange={(e) => setAvaliador(e.target.value)}
+          onChange={(e) => setAvaliadorOverride(e.target.value)}
           placeholder="O teu nome, para o cabeçalho do PDF"
         />
       </div>
