@@ -6,7 +6,7 @@ import { listPositions } from "@/lib/data/positions";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Panel } from "@/components/layout/Panel";
 import { AthleteList } from "@/components/teams/AthleteList";
-import { TeamStatsTable } from "@/components/teams/TeamStatsTable";
+import { TeamAthleteRows } from "@/components/teams/TeamAthleteRows";
 import { PerformanceWheel } from "@/components/wheel/PerformanceWheel";
 import { AREA_LABELS, areaTypeFromSlug, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
 
@@ -71,11 +71,7 @@ export default async function TeamPage({
                         competencies={g.competencies}
                         scores={Object.fromEntries(g.stats.map((s) => [s.competencyId, s.avg]))}
                       />
-                      <TeamStatsTable
-                        competencies={g.competencies}
-                        athletes={g.athletes}
-                        stats={g.stats}
-                      />
+                      <TeamAthleteRows competencies={g.competencies} athletes={g.athletes} />
                     </>
                   ) : (
                     <p className="hint">
@@ -124,11 +120,7 @@ export default async function TeamPage({
           ) : (
             <>
               <PerformanceWheel competencies={competencies} scores={averages} />
-              <TeamStatsTable
-                competencies={competencies}
-                athletes={team.athletes}
-                stats={team.stats}
-              />
+              <TeamAthleteRows competencies={competencies} athletes={team.athletes} />
             </>
           )}
         </div>

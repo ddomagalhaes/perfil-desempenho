@@ -4,7 +4,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Panel } from "@/components/layout/Panel";
+import { ExpandableRow } from "@/components/ui/ExpandableRow";
+import { ExpandableRowGroup } from "@/components/ui/ExpandableRowGroup";
+import { CompetencyBars } from "@/components/ui/CompetencyBars";
 import type { PositionDTO, ProspectDTO } from "@/lib/types";
+import type { ProspectEvaluationSummary } from "@/lib/data/scoutingEvaluations";
 
 type LinkableAthlete = { id: string; name: string; teamName: string; alreadyLinked: boolean };
 
@@ -12,10 +16,12 @@ export function ProspectManager({
   prospects,
   positions,
   athletes,
+  summaries,
 }: {
   prospects: ProspectDTO[];
   positions: PositionDTO[];
   athletes: LinkableAthlete[];
+  summaries: Record<string, ProspectEvaluationSummary>;
 }) {
   const router = useRouter();
 
@@ -184,33 +190,66 @@ export function ProspectManager({
               </button>
             </div>
           )}
-          <ul className="list-plain">
-            {filteredProspects.map((p) => (
-              <li key={p.id}>
-                <Link
-                  href={`/scouting/prospects/${p.id}`}
-                  style={{ flex: 1, display: "flex", flexDirection: "column", textDecoration: "none" }}
-                >
-                  <span>
-                    {p.name}
-                    {p.athleteId && (
-                      <span className="mono" style={{ color: "var(--text-muted)", fontSize: 11 }}>
-                        {" "}
-                        · atleta em {p.athleteTeamName}
-                      </span>
-                    )}
-                  </span>
-                  <span className="mono" style={{ color: "var(--text-muted)", fontSize: 12 }}>
-                    {p.positionName ?? "Sem posição"}
-                    {p.club ? ` · ${p.club}` : ""}
-                  </span>
-                </Link>
-                <button type="button" className="del" onClick={() => handleArchive(p.id, p.name)}>
-                  remover
-                </button>
-              </li>
-            ))}
-          </ul>
+          {filteredProspects.length > 0 && (
+            <ExpandableRowGroup>
+              {filteredProspects.map((p) => {
+                const summary = summaries[p.id];
+                const bars = (summary?.kpis ?? [])
+                  .map((k) => ({ id: k.kpiId, name: k.name, value: k.average }))
+                  .filter((b): b is { id: string; name: string; value: number } => b.value !== null);
+
+                return (
+                  <ExpandableRow
+                    key={p.id}
+                    id={p.id}
+                    closed={
+                      <div className="athlete-row-closed">
+                        <div className="athlete-row-name">
+                          <strong>{p.name}</strong>
+                          <span className="athlete-row-meta">
+                            {p.positionName ?? "Sem posição"}
+                            {p.club ? ` · ${p.club}` : ""}
+                            {p.athleteId ? ` · atleta em ${p.athleteTeamName}` : ""}
+                          </span>
+                        </div>
+                        <div className="athlete-row-score">
+                          <span className="athlete-row-score-label">Jogos avaliados</span>
+                          <span className="athlete-row-score-value">{summary?.gamesEvaluated ?? 0}</span>
+                        </div>
+                        <div className="athlete-row-score">
+                          <span className="athlete-row-score-label">Score</span>
+                          <span
+                            className={
+                              summary?.latestScore == null
+                                ? "athlete-row-score-value is-empty"
+                                : "athlete-row-score-value"
+                            }
+                          >
+                            {summary?.latestScore == null ? "—" : summary.latestScore.toFixed(1)}
+                          </span>
+                        </div>
+                      </div>
+                    }
+                    open={
+                      <div className="athlete-open">
+                        <div className="athlete-open-section">
+                          <h4>Scores por KPI</h4>
+                          <CompetencyBars bars={bars} emptyLabel="Sem avaliações registadas ainda." />
+                        </div>
+                        <div className="athlete-open-actions">
+                          <Link href={`/scouting/prospects/${p.id}/evaluate`}>Avaliar</Link>
+                          <Link href={`/scouting/prospects/${p.id}`}>Ver ficha</Link>
+                          <button type="button" className="del" onClick={() => handleArchive(p.id, p.name)}>
+                            remover
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  />
+                );
+              })}
+            </ExpandableRowGroup>
+          )}
         </Panel>
       </div>
     </div>

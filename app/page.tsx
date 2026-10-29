@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { getOverviewStats } from "@/lib/data/overview";
+import { listHomeAthletes } from "@/lib/data/homeAthletes";
+import { ExpandableRowGroup } from "@/components/ui/ExpandableRowGroup";
+import { AthleteRow } from "@/components/home/AthleteRow";
 
 export const dynamic = "force-dynamic";
 
@@ -60,7 +63,7 @@ function plural(n: number, one: string, many: string) {
 }
 
 export default async function Home() {
-  const stats = await getOverviewStats();
+  const [stats, athletes] = await Promise.all([getOverviewStats(), listHomeAthletes()]);
 
   const sections: Section[] = [
     {
@@ -161,6 +164,19 @@ export default async function Home() {
             </div>
           </article>
         ))}
+      </section>
+
+      <section className="home-athletes" aria-label="Atletas">
+        <h2>Atletas</h2>
+        {athletes.length === 0 ? (
+          <p className="empty">Ainda não há atletas registados.</p>
+        ) : (
+          <ExpandableRowGroup>
+            {athletes.map((athlete) => (
+              <AthleteRow key={athlete.id} athlete={athlete} />
+            ))}
+          </ExpandableRowGroup>
+        )}
       </section>
     </main>
   );

@@ -1,27 +1,18 @@
 import type { EvaluationCadence } from "@/app/generated/prisma/enums";
 import { KPIS, bandaParaValor, scorePonderado, KPIS_POR_JOGO, KPIS_PERIODICAS } from "@/lib/scouting-kpi/kpiData";
 import type { EvaluationHistoryEntry } from "@/lib/data/scoutingEvaluations";
+import { Delta } from "@/components/ui/Delta";
+import { CompetencyBars } from "@/components/ui/CompetencyBars";
+import { ExpandableRow } from "@/components/ui/ExpandableRow";
+import { ExpandableRowGroup } from "@/components/ui/ExpandableRowGroup";
 
 const CADENCE_LABEL: Record<EvaluationCadence, string> = {
   POR_JOGO: "Jogo",
   PERIODICA: "Período",
 };
 
-function formatColDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("pt-PT", { day: "2-digit", month: "short" });
-}
-
-function Delta({ value }: { value: number | null }) {
-  if (value === null) return <span className="hd-delta hd-delta-flat">—</span>;
-  const rounded = Math.round(value * 10) / 10;
-  if (rounded === 0) return <span className="hd-delta hd-delta-flat">0,0</span>;
-  const up = rounded > 0;
-  return (
-    <span className={up ? "hd-delta hd-delta-up" : "hd-delta hd-delta-down"}>
-      {up ? "▲" : "▼"} {up ? "+" : ""}
-      {rounded.toFixed(1)}
-    </span>
-  );
+function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("pt-PT", { day: "2-digit", month: "short", year: "numeric" });
 }
 
 function CadenceCard({
@@ -65,58 +56,67 @@ function CadenceCard({
   );
 }
 
+/** Rótulo "data e jogo" de uma avaliação — adversário para "por jogo" (gravado no
+ * próprio registo, nunca inventado), período para "periódica". */
+function entryLabel(entry: EvaluationHistoryEntry): string {
+  const date = formatDate(entry.createdAt);
+  if (entry.cadence === "POR_JOGO") {
+    return entry.gameContext ? `${date} · vs ${entry.gameContext.adversario}` : date;
+  }
+  return entry.periodo ? `${date} · ${entry.periodo}` : date;
+}
+
 export function EvaluationHistory({ entries }: { entries: EvaluationHistoryEntry[] }) {
   if (entries.length === 0) {
     return <p className="empty">Sem avaliações registadas ainda.</p>;
   }
 
-  const sortedAsc = [...entries].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
-  const columns = sortedAsc.slice(-5);
-
-  const rows = KPIS.map((kpi) => {
-    const cells = columns.map((col) => col.scores[kpi.id] ?? null);
-    const withValue = sortedAsc.filter((e) => kpi.id in e.scores);
-    const last = withValue.length > 0 ? withValue[withValue.length - 1].scores[kpi.id] : null;
-    const prev = withValue.length > 1 ? withValue[withValue.length - 2].scores[kpi.id] : null;
-    const delta = last !== null && prev !== null ? last - prev : null;
-    return { kpi, cells, delta, hasData: withValue.length > 0 };
-  }).filter((r) => r.hasData);
-
   const porJogoEntries = entries.filter((e) => e.cadence === "POR_JOGO");
   const periodicaEntries = entries.filter((e) => e.cadence === "PERIODICA");
+
+  // Mais recentes primeiro (listEvaluations já devolve por ordem decrescente),
+  // com a variação calculada contra a avaliação anterior DA MESMA cadência —
+  // nunca comparamos "por jogo" com "periódica".
+  const rows = entries.map((entry, index) => {
+    const kpis = entry.cadence === "POR_JOGO" ? KPIS_POR_JOGO : KPIS_PERIODICAS;
+    const score = scorePonderado(kpis, entry.scores);
+    const previousOfSameCadence = entries
+      .slice(index + 1)
+      .find((e) => e.cadence === entry.cadence);
+    const delta = previousOfSameCadence
+      ? score - scorePonderado(kpis, previousOfSameCadence.scores)
+      : null;
+    const bars = KPIS.map((kpi) => ({ id: kpi.id, name: kpi.name, value: entry.scores[kpi.id] }))
+      .filter((b): b is { id: string; name: string; value: number } => b.value !== undefined);
+
+    return { entry, score, delta, bars };
+  });
 
   return (
     <div className="hd-layout">
       <div className="hd-table-wrap">
-        <table className="hd-table">
-          <thead>
-            <tr>
-              <th>Competência</th>
-              {columns.map((col) => (
-                <th key={col.id}>
-                  <span className="hd-col-date">{formatColDate(col.createdAt)}</span>
-                  <span className="hd-col-cadence">{CADENCE_LABEL[col.cadence]}</span>
-                </th>
-              ))}
-              <th>Variação</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map(({ kpi, cells, delta }) => (
-              <tr key={kpi.id}>
-                <td>{kpi.name}</td>
-                {cells.map((v, i) => (
-                  <td key={columns[i].id} className="mono">
-                    {v ?? "—"}
-                  </td>
-                ))}
-                <td>
-                  <Delta value={delta} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <ExpandableRowGroup>
+          {rows.map(({ entry, score, delta, bars }) => (
+            <ExpandableRow
+              key={entry.id}
+              id={entry.id}
+              closed={
+                <div className="athlete-row-closed">
+                  <div className="athlete-row-name">
+                    <strong>{entryLabel(entry)}</strong>
+                    <span className="athlete-row-meta">{CADENCE_LABEL[entry.cadence]}</span>
+                  </div>
+                  <div className="athlete-row-score">
+                    <span className="athlete-row-score-label">Score ponderado</span>
+                    <span className="athlete-row-score-value">{score.toFixed(1)}</span>
+                    <Delta value={delta} />
+                  </div>
+                </div>
+              }
+              open={<CompetencyBars bars={bars} />}
+            />
+          ))}
+        </ExpandableRowGroup>
       </div>
 
       <div className="hd-summary">

@@ -26,6 +26,7 @@ model Competency {
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
   scores        Score[]
+  scoreHistory  ScoreHistory[]
   positions     PositionCompetency[]
   scoutingNotes ScoutingNote[]
 
@@ -78,6 +79,7 @@ model Athlete {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   scores     Score[]
+  scoreHistory ScoreHistory[]
   prospect   Prospect?
   student    Student?
 
@@ -96,6 +98,25 @@ model Score {
 
   @@id([athleteId, competencyId])
   @@map("scores")
+}
+
+// Um registo por cada vez que upsertScore grava um valor — ao contrário de Score
+// (que só guarda o valor atual, substituído a cada gravação), esta tabela cresce
+// com o tempo e é a única forma de calcular uma tendência (+/-) para os scores
+// psicológico/técnico de um atleta. Começou a ser escrita a partir de 2026-10-29;
+// antes disso não há histórico, por isso a tendência só aparece depois de pelo
+// menos 2 gravações para a mesma competência.
+model ScoreHistory {
+  id           String     @id @default(uuid())
+  athleteId    String
+  athlete      Athlete    @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  competencyId String
+  competency   Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  value        Int
+  recordedAt   DateTime   @default(now())
+
+  @@index([athleteId, competencyId, recordedAt])
+  @@map("score_history")
 }
 
 model Prospect {

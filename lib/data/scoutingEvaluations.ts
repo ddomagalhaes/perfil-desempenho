@@ -18,6 +18,8 @@ export type EvaluationHistoryEntry = {
   scores: Record<string, number>;
   notas: string;
   createdAt: string;
+  periodo: string;
+  gameContext: GameContext | null;
 };
 
 export async function createPerGameEvaluation(input: {
@@ -268,5 +270,73 @@ export async function listEvaluations(prospectId: string): Promise<EvaluationHis
     scores: r.scores as Record<string, number>,
     notas: r.notas,
     createdAt: r.createdAt.toISOString(),
+    periodo: r.periodo,
+    gameContext: (r.gameContext as unknown as GameContext | null) ?? null,
   }));
+}
+
+export type ProspectEvaluationSummary = {
+  prospectId: string;
+  /** Número de avaliações "por jogo" registadas — não é o número real de jogos
+   * disputados pelo prospeto (não temos essa fonte de dados), por isso é sempre
+   * apresentado como "jogos avaliados". */
+  gamesEvaluated: number;
+  latestScore: number | null;
+  latestBanda: Banda | null;
+  kpis: { kpiId: string; name: string; average: number | null }[];
+};
+
+/** Resumo por prospeto para a lista de Prospetos — só o essencial (nº de
+ * avaliações por jogo, score ponderado da avaliação mais recente e a média por
+ * KPI), numa única query em vez de repetir getProspectProfile por prospeto. */
+export async function listProspectEvaluationSummaries(
+  prospectIds: string[]
+): Promise<Map<string, ProspectEvaluationSummary>> {
+  const result = new Map<string, ProspectEvaluationSummary>();
+  if (prospectIds.length === 0) return result;
+
+  const rows = await prisma.scoutingEvaluation.findMany({
+    where: { prospectId: { in: prospectIds } },
+    orderBy: { createdAt: "desc" },
+    select: { prospectId: true, cadence: true, scores: true },
+  });
+
+  const byProspect = new Map<string, typeof rows>();
+  for (const row of rows) {
+    if (!byProspect.has(row.prospectId)) byProspect.set(row.prospectId, []);
+    byProspect.get(row.prospectId)!.push(row);
+  }
+
+  for (const prospectId of prospectIds) {
+    const entries = byProspect.get(prospectId) ?? [];
+    const gamesEvaluated = entries.filter((e) => e.cadence === "POR_JOGO").length;
+
+    const latest = entries[0];
+    const latestScore = latest
+      ? roundTo1(
+          scorePonderado(
+            latest.cadence === "POR_JOGO" ? KPIS_POR_JOGO : KPIS_PERIODICAS,
+            latest.scores as Record<string, number>
+          )
+        )
+      : null;
+
+    const kpis = KPIS.map((kpi) => {
+      const values = entries
+        .map((e) => (e.scores as Record<string, number>)[kpi.id])
+        .filter((v): v is number => v !== undefined);
+      const avg = average(values);
+      return { kpiId: kpi.id, name: kpi.name, average: avg === null ? null : roundTo1(avg) };
+    });
+
+    result.set(prospectId, {
+      prospectId,
+      gamesEvaluated,
+      latestScore,
+      latestBanda: latestScore === null ? null : bandaParaValor(latestScore),
+      kpis,
+    });
+  }
+
+  return result;
 }
