@@ -1482,98 +1482,181 @@ input[type="range"] {
   color: var(--accent-dark);
 }
 
-.home-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+/* Página inicial dividida em 4 fatias (uma por área) que expandem para
+   dentro ao passar o cursor (ou tocar/focar) — mesma lógica de abertura do
+   ExpandableRow (componente AreaPanel), só que em largura no portátil e em
+   altura no telemóvel. */
+.home-split {
+  display: flex;
   gap: 10px;
   margin-top: 18px;
 }
 
-.home-card {
+.area-panel {
   position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 440px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   background: var(--surface-1);
   border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 16px;
-  transition: border-color 0.15s ease;
+  border-radius: 14px;
+  overflow: hidden;
+  transition:
+    flex 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.2s ease;
 }
 
-.home-card:hover {
+.area-panel.open {
+  flex: 2.6;
+  justify-content: flex-start;
   border-color: var(--teal);
 }
 
-.home-card-icon {
+.area-panel-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  width: 100%;
+  padding: 20px;
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: text-align 0s;
+}
+
+.area-panel.open .area-panel-summary {
+  flex-direction: row;
+  text-align: left;
+}
+
+.area-panel-summary:focus-visible {
+  outline: 2px solid var(--accent-dark);
+  outline-offset: -2px;
+}
+
+.area-panel-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  margin-bottom: 10px;
-  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 10px;
   background: var(--teal-dim);
   color: var(--accent-dark);
 }
 
-.home-card-icon svg {
-  width: 17px;
-  height: 17px;
+.area-panel-icon svg {
+  width: 20px;
+  height: 20px;
 }
 
-.home-card h2 {
-  margin: 0 0 4px;
-  font-size: 15px;
-  font-weight: 600;
+.area-panel-title {
+  font-family: var(--font-barlow), sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.02em;
+  white-space: normal;
+  min-width: 0;
 }
 
-.home-card h2 a {
-  text-decoration: none;
+.area-panel-body {
+  display: grid;
+  grid-template-rows: minmax(0, 0fr);
+  min-height: 0;
+  transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.home-card h2 a::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 10px;
+.area-panel.open .area-panel-body {
+  grid-template-rows: minmax(0, 1fr);
 }
 
-.home-card-desc {
+.area-panel-body-clip {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.area-panel-body-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 20px 20px;
+}
+
+.area-panel-desc {
   margin: 0;
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.5;
   color: var(--text-muted);
 }
 
-.home-card-stat {
-  margin: 10px 0 0;
+.area-panel-stat {
+  margin: 0;
   font-family: var(--font-jetbrains), monospace;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--accent-dark);
 }
 
-.home-card-links {
-  position: relative;
-  z-index: 1;
+.area-panel-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--line);
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 12px;
 }
 
-.home-card-links a {
-  padding: 3px 9px;
+.area-panel-links a {
+  padding: 5px 12px;
   border-radius: 999px;
-  font-size: 11.5px;
+  font-size: 12px;
   text-decoration: none;
   color: var(--text-muted);
+  border: 1px solid var(--line);
 }
 
-.home-card-links a:hover {
+.area-panel-links a:hover {
   background: var(--teal-dim);
+  border-color: var(--teal);
   color: var(--accent-dark);
+}
+
+.area-panel-links .area-panel-cta {
+  background: var(--deep-green);
+  color: #fff;
+  border-color: var(--deep-green);
+}
+
+.area-panel-links .area-panel-cta:hover {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .area-panel,
+  .area-panel-body {
+    transition: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .home-split {
+    flex-direction: column;
+  }
+
+  .area-panel {
+    flex: none;
+    min-height: 0;
+    justify-content: flex-start;
+  }
 }
 
 /* Revela um bloco com fade + deslize quando entra em vista ao fazer scroll
@@ -1650,12 +1733,12 @@ input[type="range"] {
 
 .expandable-row-body {
   display: grid;
-  grid-template-rows: 0fr;
+  grid-template-rows: minmax(0, 0fr);
   transition: grid-template-rows 0.22s ease;
 }
 
 .expandable-row.open .expandable-row-body {
-  grid-template-rows: 1fr;
+  grid-template-rows: minmax(0, 1fr);
 }
 
 .expandable-row-body > div {
@@ -1677,18 +1760,6 @@ input[type="range"] {
 /* Lista de atletas na página inicial — uma ExpandableRow por atleta, com os
    scores psicológico/técnico na linha fechada e mini-barras + ações na linha
    aberta. */
-.home-athletes {
-  margin-top: 28px;
-}
-
-.home-athletes h2 {
-  font-size: 15px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-  margin: 0 0 10px;
-}
-
 .athlete-row-closed {
   display: flex;
   align-items: center;

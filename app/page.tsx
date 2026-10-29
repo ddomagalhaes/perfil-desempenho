@@ -1,8 +1,6 @@
-import Link from "next/link";
 import { getOverviewStats } from "@/lib/data/overview";
-import { listHomeAthletes } from "@/lib/data/homeAthletes";
 import { ExpandableRowGroup } from "@/components/ui/ExpandableRowGroup";
-import { AthleteRow } from "@/components/home/AthleteRow";
+import { AreaPanel } from "@/components/home/AreaPanel";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export const dynamic = "force-dynamic";
@@ -64,7 +62,7 @@ function plural(n: number, one: string, many: string) {
 }
 
 export default async function Home() {
-  const [stats, athletes] = await Promise.all([getOverviewStats(), listHomeAthletes()]);
+  const stats = await getOverviewStats();
 
   const sections: Section[] = [
     {
@@ -149,41 +147,21 @@ export default async function Home() {
         </section>
       </ScrollReveal>
 
-      <section className="home-grid" aria-label="Áreas da aplicação">
-        {sections.map((s, i) => (
-          <ScrollReveal key={s.title} delay={i * 70}>
-            <article className="home-card">
-              <div className="home-card-icon">{s.icon}</div>
-              <h2>
-                <Link href={s.href}>{s.title}</Link>
-              </h2>
-              <p className="home-card-desc">{s.description}</p>
-              {s.stat && <p className="home-card-stat">{s.stat}</p>}
-              <div className="home-card-links">
-                {s.links.map((l) => (
-                  <Link key={l.href} href={l.href}>
-                    {l.label}
-                  </Link>
-                ))}
-              </div>
-            </article>
-          </ScrollReveal>
-        ))}
-      </section>
-
-      <section className="home-athletes" aria-label="Atletas">
-        <ScrollReveal>
-          <h2>Atletas</h2>
-        </ScrollReveal>
-        {athletes.length === 0 ? (
-          <p className="empty">Ainda não há atletas registados.</p>
-        ) : (
-          <ExpandableRowGroup>
-            {athletes.map((athlete, i) => (
-              <AthleteRow key={athlete.id} athlete={athlete} revealDelay={Math.min(i, 6) * 60} />
-            ))}
-          </ExpandableRowGroup>
-        )}
+      <section className="home-split" aria-label="Áreas da aplicação">
+        <ExpandableRowGroup initialOpenId={sections[0].title}>
+          {sections.map((s) => (
+            <AreaPanel
+              key={s.title}
+              id={s.title}
+              href={s.href}
+              icon={s.icon}
+              title={s.title}
+              description={s.description}
+              stat={s.stat}
+              links={s.links}
+            />
+          ))}
+        </ExpandableRowGroup>
       </section>
     </main>
   );
