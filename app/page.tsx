@@ -3,6 +3,7 @@ import { getOverviewStats } from "@/lib/data/overview";
 import { listHomeAthletes } from "@/lib/data/homeAthletes";
 import { ExpandableRowGroup } from "@/components/ui/ExpandableRowGroup";
 import { AthleteRow } from "@/components/home/AthleteRow";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export const dynamic = "force-dynamic";
 
@@ -117,63 +118,69 @@ export default async function Home() {
 
   return (
     <main className="home">
-      <section className="home-hero">
-        <p className="home-eyebrow">Departamento de Formação</p>
-        <h1>Perfil de Desempenho</h1>
-        <p className="home-lead">
-          Um só sítio para acompanhar o perfil psicológico, técnico/tático, o scouting e a vida
-          escolar dos atletas.
-        </p>
-        {stats && (
-          <dl className="home-stats">
-            <div>
-              <dt>Atletas</dt>
-              <dd>{stats.athletes}</dd>
-            </div>
-            <div>
-              <dt>Equipas</dt>
-              <dd>{stats.teams}</dd>
-            </div>
-            <div>
-              <dt>Prospetos</dt>
-              <dd>{stats.prospects}</dd>
-            </div>
-            <div>
-              <dt>Avaliações de scouting</dt>
-              <dd>{stats.evaluations}</dd>
-            </div>
-          </dl>
-        )}
-      </section>
+      <ScrollReveal>
+        <section className="home-hero">
+          <p className="home-eyebrow">Departamento de Formação</p>
+          <h1>Perfil de Desempenho</h1>
+          <p className="home-lead">
+            Um só sítio para acompanhar o perfil psicológico, técnico/tático, o scouting e a vida
+            escolar dos atletas.
+          </p>
+          {stats && (
+            <dl className="home-stats">
+              <div>
+                <dt>Atletas</dt>
+                <dd>{stats.athletes}</dd>
+              </div>
+              <div>
+                <dt>Equipas</dt>
+                <dd>{stats.teams}</dd>
+              </div>
+              <div>
+                <dt>Prospetos</dt>
+                <dd>{stats.prospects}</dd>
+              </div>
+              <div>
+                <dt>Avaliações de scouting</dt>
+                <dd>{stats.evaluations}</dd>
+              </div>
+            </dl>
+          )}
+        </section>
+      </ScrollReveal>
 
       <section className="home-grid" aria-label="Áreas da aplicação">
-        {sections.map((s) => (
-          <article className="home-card" key={s.title}>
-            <div className="home-card-icon">{s.icon}</div>
-            <h2>
-              <Link href={s.href}>{s.title}</Link>
-            </h2>
-            <p className="home-card-desc">{s.description}</p>
-            {s.stat && <p className="home-card-stat">{s.stat}</p>}
-            <div className="home-card-links">
-              {s.links.map((l) => (
-                <Link key={l.href} href={l.href}>
-                  {l.label}
-                </Link>
-              ))}
-            </div>
-          </article>
+        {sections.map((s, i) => (
+          <ScrollReveal key={s.title} delay={i * 70}>
+            <article className="home-card">
+              <div className="home-card-icon">{s.icon}</div>
+              <h2>
+                <Link href={s.href}>{s.title}</Link>
+              </h2>
+              <p className="home-card-desc">{s.description}</p>
+              {s.stat && <p className="home-card-stat">{s.stat}</p>}
+              <div className="home-card-links">
+                {s.links.map((l) => (
+                  <Link key={l.href} href={l.href}>
+                    {l.label}
+                  </Link>
+                ))}
+              </div>
+            </article>
+          </ScrollReveal>
         ))}
       </section>
 
       <section className="home-athletes" aria-label="Atletas">
-        <h2>Atletas</h2>
+        <ScrollReveal>
+          <h2>Atletas</h2>
+        </ScrollReveal>
         {athletes.length === 0 ? (
           <p className="empty">Ainda não há atletas registados.</p>
         ) : (
           <ExpandableRowGroup>
-            {athletes.map((athlete) => (
-              <AthleteRow key={athlete.id} athlete={athlete} />
+            {athletes.map((athlete, i) => (
+              <AthleteRow key={athlete.id} athlete={athlete} revealDelay={Math.min(i, 6) * 60} />
             ))}
           </ExpandableRowGroup>
         )}

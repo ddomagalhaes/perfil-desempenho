@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import type { AreaScoreSummary, HomeAthleteRow } from "@/lib/data/homeAthletes";
 import { ExpandableRow } from "@/components/ui/ExpandableRow";
 import { Delta } from "@/components/ui/Delta";
 import { CompetencyBars } from "@/components/ui/CompetencyBars";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 function ScoreCell({ label, summary }: { label: string; summary: AreaScoreSummary }) {
   return (
@@ -16,7 +19,7 @@ function ScoreCell({ label, summary }: { label: string; summary: AreaScoreSummar
   );
 }
 
-export function AthleteRow({ athlete }: { athlete: HomeAthleteRow }) {
+export function AthleteRow({ athlete, revealDelay = 0 }: { athlete: HomeAthleteRow; revealDelay?: number }) {
   const closed = (
     <div className="athlete-row-closed">
       <div className="athlete-row-name">
@@ -43,7 +46,7 @@ export function AthleteRow({ athlete }: { athlete: HomeAthleteRow }) {
       <div className="athlete-open-section">
         <h4>Scouting</h4>
         {athlete.scouting ? (
-          <>
+          <div>
             <p className="athlete-open-last-eval">
               {athlete.scouting.lastEvaluation
                 ? `Última avaliação: ${athlete.scouting.lastEvaluation.label}`
@@ -58,7 +61,7 @@ export function AthleteRow({ athlete }: { athlete: HomeAthleteRow }) {
                 </Link>
               )}
             </div>
-          </>
+          </div>
         ) : (
           <p className="athlete-open-empty">Ainda não está ligado a um prospeto de scouting.</p>
         )}
@@ -66,5 +69,9 @@ export function AthleteRow({ athlete }: { athlete: HomeAthleteRow }) {
     </div>
   );
 
-  return <ExpandableRow id={athlete.id} closed={closed} open={open} />;
+  return (
+    <ScrollReveal delay={revealDelay}>
+      <ExpandableRow id={athlete.id} closed={closed} open={open} />
+    </ScrollReveal>
+  );
 }

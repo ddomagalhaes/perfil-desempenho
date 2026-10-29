@@ -1576,6 +1576,29 @@ input[type="range"] {
   color: var(--accent-dark);
 }
 
+/* Revela um bloco com fade + deslize quando entra em vista ao fazer scroll
+   (componente ScrollReveal) — só na página inicial. */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scroll-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* Linha compacta/expansível reutilizável (componente ExpandableRow) — hover
    (~150ms), toque ou foco por teclado abrem; Esc fecha; só uma aberta por
    lista (ExpandableRowGroup). Altura animada via CSS grid 0fr→1fr, sem medir
