@@ -27,6 +27,7 @@ export async function createPerGameEvaluation(input: {
   scores: Record<string, number>;
   context: GameContext;
   avaliador: string;
+  notas?: string;
 }): Promise<{ id: string }> {
   const created = await prisma.scoutingEvaluation.create({
     data: {
@@ -35,6 +36,7 @@ export async function createPerGameEvaluation(input: {
       scores: input.scores,
       gameContext: input.context as unknown as Prisma.InputJsonValue,
       avaliador: input.avaliador,
+      notas: input.notas ?? "",
     },
   });
   return { id: created.id };
@@ -60,26 +62,101 @@ export async function createPeriodicEvaluation(input: {
   return { id: created.id };
 }
 
-export type EvaluationDetail = {
+export type EvaluationHalf = {
   id: string;
   cadence: EvaluationCadence;
   scores: Record<string, number>;
-  notas: string;
-  avaliador: string;
   periodo: string;
   gameContext: GameContext | null;
   createdAt: string;
-  prospectId: string;
-  prospectName: string;
-  prospectPositionName: string | null;
   /** Pontuações da avaliação anterior do mesmo prospeto E da mesma cadência
    * (nunca comparamos "por jogo" com "periódica") — null se esta for a
    * primeira. Usado no PDF para mostrar a variação por competência. */
   previousScores: Record<string, number> | null;
 };
 
-/** Uma avaliação completa, com os dados do prospeto já juntos — usada só pela
- * página de impressão/PDF, que precisa do nome e posição para o cabeçalho. */
+export type EvaluationDetail = {
+  avaliador: string;
+  notas: string;
+  createdAt: string;
+  prospectId: string;
+  prospectName: string;
+  prospectPositionName: string | null;
+  /** null quando essa cadência não foi preenchida nesta sessão de avaliação
+   * (ou não há nenhuma suficientemente próxima no tempo para se considerar a
+   * mesma sessão) — o PDF mostra só a tabela que existir, nunca inventa a
+   * outra. */
+  porJogo: EvaluationHalf | null;
+  periodica: EvaluationHalf | null;
+};
+
+const PAIR_WINDOW_MS = 5 * 60 * 1000;
+
+/** Encontra, para o mesmo prospeto, a avaliação da OUTRA cadência mais
+ * próxima no tempo de `createdAt` — só conta como "da mesma sessão" se
+ * estiver a menos de 5 minutos de distância (são gravadas uma a seguir à
+ * outra, no mesmo clique de "Guardar"/"Gerar PDF"). */
+async function findPairedEvaluation(
+  prospectId: string,
+  otherCadence: EvaluationCadence,
+  createdAt: Date,
+  excludeId: string
+) {
+  const candidates = await prisma.scoutingEvaluation.findMany({
+    where: { prospectId, cadence: otherCadence, id: { not: excludeId } },
+  });
+
+  let closest: (typeof candidates)[number] | null = null;
+  let closestDiff = Infinity;
+  for (const c of candidates) {
+    const diff = Math.abs(c.createdAt.getTime() - createdAt.getTime());
+    if (diff < closestDiff) {
+      closestDiff = diff;
+      closest = c;
+    }
+  }
+  return closest && closestDiff <= PAIR_WINDOW_MS ? closest : null;
+}
+
+async function previousScoresFor(
+  prospectId: string,
+  cadence: EvaluationCadence,
+  createdAt: Date
+): Promise<Record<string, number> | null> {
+  const previous = await prisma.scoutingEvaluation.findFirst({
+    where: { prospectId, cadence, createdAt: { lt: createdAt } },
+    orderBy: { createdAt: "desc" },
+    select: { scores: true },
+  });
+  return (previous?.scores as Record<string, number> | undefined) ?? null;
+}
+
+function toHalf(
+  row: {
+    id: string;
+    cadence: EvaluationCadence;
+    scores: unknown;
+    periodo: string;
+    gameContext: unknown;
+    createdAt: Date;
+  },
+  previousScores: Record<string, number> | null
+): EvaluationHalf {
+  return {
+    id: row.id,
+    cadence: row.cadence,
+    scores: row.scores as Record<string, number>,
+    periodo: row.periodo,
+    gameContext: (row.gameContext as unknown as GameContext | null) ?? null,
+    createdAt: row.createdAt.toISOString(),
+    previousScores,
+  };
+}
+
+/** Uma avaliação completa para o PDF — junta a avaliação pedida com a da
+ * outra cadência mais próxima no tempo (a "sessão" em que foram gravadas
+ * juntas), para o documento mostrar sempre as duas tabelas quando existirem,
+ * nunca só a que o link apontava. */
 export async function getEvaluationById(id: string): Promise<EvaluationDetail | null> {
   const row = await prisma.scoutingEvaluation.findUnique({
     where: { id },
@@ -87,29 +164,31 @@ export async function getEvaluationById(id: string): Promise<EvaluationDetail | 
   });
   if (!row) return null;
 
-  const previous = await prisma.scoutingEvaluation.findFirst({
-    where: {
-      prospectId: row.prospectId,
-      cadence: row.cadence,
-      createdAt: { lt: row.createdAt },
-    },
-    orderBy: { createdAt: "desc" },
-    select: { scores: true },
-  });
+  const otherCadence = row.cadence === "POR_JOGO" ? "PERIODICA" : "POR_JOGO";
+  const [ownPrevious, pairedRow] = await Promise.all([
+    previousScoresFor(row.prospectId, row.cadence, row.createdAt),
+    findPairedEvaluation(row.prospectId, otherCadence, row.createdAt, row.id),
+  ]);
+
+  const ownHalf = toHalf(row, ownPrevious);
+  let pairedHalf: EvaluationHalf | null = null;
+  if (pairedRow) {
+    const pairedPrevious = await previousScoresFor(row.prospectId, pairedRow.cadence, pairedRow.createdAt);
+    pairedHalf = toHalf(pairedRow, pairedPrevious);
+  }
+
+  const porJogo = row.cadence === "POR_JOGO" ? ownHalf : pairedHalf;
+  const periodica = row.cadence === "PERIODICA" ? ownHalf : pairedHalf;
 
   return {
-    id: row.id,
-    cadence: row.cadence,
-    scores: row.scores as Record<string, number>,
-    notas: row.notas,
-    avaliador: row.avaliador,
-    periodo: row.periodo,
-    gameContext: (row.gameContext as unknown as GameContext | null) ?? null,
+    avaliador: row.avaliador || pairedRow?.avaliador || "",
+    notas: row.notas || pairedRow?.notas || "",
     createdAt: row.createdAt.toISOString(),
     prospectId: row.prospectId,
     prospectName: row.prospect.name,
     prospectPositionName: row.prospect.position?.name ?? null,
-    previousScores: (previous?.scores as Record<string, number> | undefined) ?? null,
+    porJogo,
+    periodica,
   };
 }
 

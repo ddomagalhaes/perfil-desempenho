@@ -4,7 +4,7 @@ import { getProspectDetail } from "@/lib/data/prospects";
 import { listEvaluations } from "@/lib/data/scoutingEvaluations";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Panel } from "@/components/layout/Panel";
-import { EvaluationTabs } from "@/components/scouting/kpi/EvaluationTabs";
+import { EvaluationForm } from "@/components/scouting/kpi/EvaluationForm";
 import { EvaluationHistory } from "@/components/scouting/kpi/EvaluationHistory";
 import type { GameContext } from "@/lib/scouting-kpi/types";
 
@@ -52,12 +52,7 @@ export default async function ProspectEvaluatePage({
           </>
         }
       />
-      <EvaluationTabs
-        prospectId={prospect.id}
-        jogadorNome={prospect.name}
-        context={context}
-        periodoLabel="últimos 5 jogos"
-      />
+      <EvaluationForm prospectId={prospect.id} context={context} periodoLabel="últimos 5 jogos" />
       <Panel title="Histórico de avaliações">
         <EvaluationHistory entries={history} />
       </Panel>

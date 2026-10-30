@@ -24,14 +24,15 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const notas = typeof body?.notas === "string" ? body.notas : "";
+
   let id: string;
   if (cadence === "por_jogo") {
     if (typeof body?.context !== "object" || body.context === null) {
       return NextResponse.json({ error: "context é obrigatório para cadence=por_jogo." }, { status: 400 });
     }
-    ({ id } = await createPerGameEvaluation({ prospectId, scores, context: body.context, avaliador }));
+    ({ id } = await createPerGameEvaluation({ prospectId, scores, context: body.context, avaliador, notas }));
   } else if (cadence === "periodica") {
-    const notas = typeof body?.notas === "string" ? body.notas : "";
     const periodo = typeof body?.periodo === "string" ? body.periodo : "";
     ({ id } = await createPeriodicEvaluation({ prospectId, scores, notas, avaliador, periodo }));
   } else {

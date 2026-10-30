@@ -686,6 +686,60 @@ tr.range td {
   color: var(--text-muted);
 }
 
+/* Duas tabelas de pontuação (por jogo + periódica) podem agora aparecer no
+   mesmo PDF — cada uma com o seu próprio título, espaçadas entre si. */
+.pdf-score-table + .pdf-score-table {
+  margin-top: 24px;
+}
+
+.pdf-score-table h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+
+.pdf-score-table table {
+  margin-top: 0;
+}
+
+/* Legenda da escala 0-10 no fundo do PDF, para quem recebe o documento sem
+   ter visto a app perceber o que cada pontuação significa. */
+.pdf-legend {
+  margin-top: 18px;
+}
+
+.pdf-legend h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+
+.pdf-legend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px 16px;
+}
+
+.pdf-legend-grid div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+}
+
+.pdf-legend-grid strong {
+  font-size: 11px;
+}
+
+.pdf-legend-grid span {
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
 @media (max-width: 600px) {
   .pdf-cols {
     grid-template-columns: 1fr;
@@ -765,6 +819,27 @@ tr.range td {
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+/* Um bloco empilhado da sessão de avaliação (por jogo / periódica / notas) —
+   antes eram páginas separadas por abas, agora ficam todas visíveis, uma a
+   seguir à outra, para uma só gravação/PDF cobrir as duas cadências. */
+.kpi-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.kpi-form-section:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.kpi-form-section-title {
+  margin: 0;
+  font-size: 15px;
 }
 
 .kpi-form-actions {

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
-import { getEvaluationById } from "@/lib/data/scoutingEvaluations";
-import { KPIS_PERIODICAS, KPIS_POR_JOGO, bandaParaValor, scorePonderado } from "@/lib/scouting-kpi/kpiData";
+import { getEvaluationById, type EvaluationHalf } from "@/lib/data/scoutingEvaluations";
+import { BANDAS_GERAIS, KPIS_PERIODICAS, KPIS_POR_JOGO, bandaParaValor, scorePonderado } from "@/lib/scouting-kpi/kpiData";
+import type { Kpi } from "@/lib/scouting-kpi/types";
 import { PrintButton } from "@/components/print/PrintButton";
 import { PrintHeader } from "@/components/print/PrintHeader";
 import { PrintFooter } from "@/components/print/PrintFooter";
@@ -21,6 +22,74 @@ function DeltaText({ value }: { value: number | null }) {
   );
 }
 
+function ScoreTable({ title, half, kpis }: { title: string; half: EvaluationHalf; kpis: Kpi[] }) {
+  const score = scorePonderado(kpis, half.scores);
+  const previousScore = half.previousScores ? scorePonderado(kpis, half.previousScores) : null;
+  const scoreDelta = previousScore !== null ? score - previousScore : null;
+  const banda = bandaParaValor(score);
+
+  return (
+    <div className="pdf-score-table">
+      <h2>{title}</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Competência</th>
+            <th>Peso</th>
+            <th>Pontuação</th>
+            <th>Banda</th>
+            <th>Variação</th>
+          </tr>
+        </thead>
+        <tbody>
+          {kpis.map((kpi) => {
+            const value = half.scores[kpi.id] ?? 0;
+            const kpiBanda = bandaParaValor(value);
+            const prevValue = half.previousScores?.[kpi.id];
+            const delta = prevValue !== undefined ? value - prevValue : null;
+            return (
+              <tr key={kpi.id}>
+                <td>{kpi.name}</td>
+                <td>{kpi.peso}</td>
+                <td>{value}</td>
+                <td>{kpiBanda?.label ?? "—"}</td>
+                <td>
+                  <DeltaText value={delta} />
+                </td>
+              </tr>
+            );
+          })}
+          <tr className="avg">
+            <td colSpan={2}>Score ponderado</td>
+            <td colSpan={2}>
+              {score.toFixed(1)}
+              {banda && <span className="pdf-score-banda"> · {banda.label}</span>}
+            </td>
+            <td>
+              <DeltaText value={scoreDelta} />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function SummaryCard({ label, half, kpis }: { label: string; half: EvaluationHalf; kpis: Kpi[] }) {
+  const score = scorePonderado(kpis, half.scores);
+  const previousScore = half.previousScores ? scorePonderado(kpis, half.previousScores) : null;
+  const scoreDelta = previousScore !== null ? score - previousScore : null;
+
+  return (
+    <section className="pdf-summary-card">
+      <h2>{label}</h2>
+      <div className="pdf-summary-value">{score.toFixed(1)}</div>
+      <DeltaText value={scoreDelta} />
+      {previousScore === null && <p className="pdf-summary-hint">Primeira avaliação registada.</p>}
+    </section>
+  );
+}
+
 export default async function PrintScoutingEvaluationPage({
   params,
 }: {
@@ -30,78 +99,51 @@ export default async function PrintScoutingEvaluationPage({
   const evaluation = await getEvaluationById(evaluationId);
   if (!evaluation) notFound();
 
-  const kpis = evaluation.cadence === "POR_JOGO" ? KPIS_POR_JOGO : KPIS_PERIODICAS;
-  const score = scorePonderado(kpis, evaluation.scores);
-  const previousScore = evaluation.previousScores ? scorePonderado(kpis, evaluation.previousScores) : null;
-  const scoreDelta = previousScore !== null ? score - previousScore : null;
-  const banda = bandaParaValor(score);
-  const ctx = evaluation.gameContext;
+  const { porJogo, periodica } = evaluation;
+  const ctx = porJogo?.gameContext ?? null;
+  const anchor = porJogo ?? periodica!;
 
   return (
     <div>
       <PrintButton />
 
       <PrintHeader
-        eyebrow={`Scouting · Avaliação ${evaluation.cadence === "POR_JOGO" ? "por jogo" : "periódica"}`}
+        eyebrow={`Scouting · Avaliação ${porJogo && periodica ? "por jogo + periódica" : porJogo ? "por jogo" : "periódica"}`}
         title={evaluation.prospectName}
         subtitle={`${evaluation.prospectPositionName ?? "Sem posição"} — avaliação de ${new Date(
-          evaluation.createdAt
+          anchor.createdAt
         ).toLocaleDateString("pt-PT")}`}
         meta={evaluation.avaliador ? [{ label: "Avaliador", value: evaluation.avaliador }] : []}
       />
 
       <div className="pdf-cols">
         <div className="pdf-col-main">
-          <table>
-            <thead>
-              <tr>
-                <th>Competência</th>
-                <th>Peso</th>
-                <th>Pontuação</th>
-                <th>Banda</th>
-                <th>Variação</th>
-              </tr>
-            </thead>
-            <tbody>
-              {kpis.map((kpi) => {
-                const value = evaluation.scores[kpi.id] ?? 0;
-                const kpiBanda = bandaParaValor(value);
-                const prevValue = evaluation.previousScores?.[kpi.id];
-                const delta = prevValue !== undefined ? value - prevValue : null;
-                return (
-                  <tr key={kpi.id}>
-                    <td>{kpi.name}</td>
-                    <td>{kpi.peso}</td>
-                    <td>{value}</td>
-                    <td>{kpiBanda?.label ?? "—"}</td>
-                    <td>
-                      <DeltaText value={delta} />
-                    </td>
-                  </tr>
-                );
-              })}
-              <tr className="avg">
-                <td colSpan={2}>Score ponderado</td>
-                <td colSpan={2}>
-                  {score.toFixed(1)}
-                  {banda && <span className="pdf-score-banda"> · {banda.label}</span>}
-                </td>
-                <td>
-                  <DeltaText value={scoreDelta} />
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          {porJogo && <ScoreTable title="Competências por jogo" half={porJogo} kpis={KPIS_POR_JOGO} />}
+          {periodica && <ScoreTable title="Competências periódicas" half={periodica} kpis={KPIS_PERIODICAS} />}
 
           <section className="kpi-print-notes">
             <h2>Notas</h2>
             {evaluation.notas && <p>{evaluation.notas}</p>}
             <div className="kpi-print-handwrite" aria-hidden="true" />
           </section>
+
+          <section className="pdf-legend">
+            <h2>Escala de pontuação (0–10)</h2>
+            <div className="pdf-legend-grid">
+              {BANDAS_GERAIS.map((b) => (
+                <div key={b.range}>
+                  <strong>
+                    {b.range} · {b.label}
+                  </strong>
+                  <span>{b.desc}</span>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
 
         <div className="pdf-col-side">
-          {evaluation.cadence === "POR_JOGO" && ctx ? (
+          {ctx && (
             <section className="kpi-print-context">
               <h2>Contexto do jogo</h2>
               <dl className="kpi-print-meta pdf-meta-stacked">
@@ -136,19 +178,19 @@ export default async function PrintScoutingEvaluationPage({
                 </div>
               </dl>
             </section>
-          ) : (
+          )}
+
+          {periodica && (
             <section className="kpi-print-context">
               <h2>Período avaliado</h2>
-              <p>{evaluation.periodo || "Não especificado"}</p>
+              <p>{periodica.periodo || "Não especificado"}</p>
             </section>
           )}
 
-          <section className="pdf-summary-card">
-            <h2>Score ponderado</h2>
-            <div className="pdf-summary-value">{score.toFixed(1)}</div>
-            <DeltaText value={scoreDelta} />
-            {previousScore === null && <p className="pdf-summary-hint">Primeira avaliação registada.</p>}
-          </section>
+          {porJogo && <SummaryCard label="Score ponderado — por jogo" half={porJogo} kpis={KPIS_POR_JOGO} />}
+          {periodica && (
+            <SummaryCard label="Score ponderado — periódica" half={periodica} kpis={KPIS_PERIODICAS} />
+          )}
         </div>
       </div>
 
