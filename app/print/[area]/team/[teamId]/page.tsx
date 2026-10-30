@@ -4,7 +4,9 @@ import { getActiveCompetencies } from "@/lib/data/competencies";
 import { PerformanceWheel } from "@/components/wheel/PerformanceWheel";
 import { TeamStatsTable } from "@/components/teams/TeamStatsTable";
 import { PrintButton } from "@/components/print/PrintButton";
-import { areaTypeFromSlug, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
+import { PrintHeader } from "@/components/print/PrintHeader";
+import { PrintFooter } from "@/components/print/PrintFooter";
+import { AREA_LABELS, areaTypeFromSlug, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
 
@@ -29,11 +31,11 @@ export default async function PrintTeamPage({
     return (
       <div>
         <PrintButton />
-        <h1>{team.name}</h1>
-        <p style={{ color: "var(--text-muted)" }}>
-          {athletes.length} atleta{athletes.length === 1 ? "" : "s"} — Técnico/Tático — médias
-          calculadas por posição — gerado em {new Date().toLocaleDateString("pt-PT")}
-        </p>
+        <PrintHeader
+          eyebrow={`${AREA_LABELS[area]} · Equipa`}
+          title={team.name}
+          subtitle={`${athletes.length} atleta${athletes.length === 1 ? "" : "s"} — médias calculadas por posição`}
+        />
         {groups.length === 0 ? (
           <p className="empty">Sem atletas com posição atribuída.</p>
         ) : (
@@ -60,6 +62,7 @@ export default async function PrintTeamPage({
             </div>
           ))
         )}
+        <PrintFooter />
       </div>
     );
   }
@@ -75,13 +78,14 @@ export default async function PrintTeamPage({
   return (
     <div>
       <PrintButton />
-      <h1>{team.name}</h1>
-      <p style={{ color: "var(--text-muted)" }}>
-        {team.athletes.length} atleta{team.athletes.length === 1 ? "" : "s"} — gerado em{" "}
-        {new Date().toLocaleDateString("pt-PT")}
-      </p>
+      <PrintHeader
+        eyebrow={`${AREA_LABELS[area]} · Equipa`}
+        title={team.name}
+        subtitle={`${team.athletes.length} atleta${team.athletes.length === 1 ? "" : "s"}`}
+      />
       <PerformanceWheel competencies={competencies} scores={averages} />
       <TeamStatsTable competencies={competencies} athletes={team.athletes} stats={team.stats} />
+      <PrintFooter />
     </div>
   );
 }

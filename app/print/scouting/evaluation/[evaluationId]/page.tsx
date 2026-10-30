@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { getEvaluationById } from "@/lib/data/scoutingEvaluations";
 import { KPIS_PERIODICAS, KPIS_POR_JOGO, bandaParaValor, scorePonderado } from "@/lib/scouting-kpi/kpiData";
 import { PrintButton } from "@/components/print/PrintButton";
+import { PrintHeader } from "@/components/print/PrintHeader";
+import { PrintFooter } from "@/components/print/PrintFooter";
 
 export const dynamic = "force-dynamic";
 
@@ -34,20 +36,19 @@ export default async function PrintScoutingEvaluationPage({
   const scoreDelta = previousScore !== null ? score - previousScore : null;
   const banda = bandaParaValor(score);
   const ctx = evaluation.gameContext;
-  const geradoEm = new Date();
 
   return (
     <div>
       <PrintButton />
 
-      <header className="kpi-print-header">
-        <h1>{evaluation.prospectName}</h1>
-        <p>
-          {evaluation.prospectPositionName ?? "Sem posição"} — avaliação de{" "}
-          {new Date(evaluation.createdAt).toLocaleDateString("pt-PT")}
-          {evaluation.avaliador && ` — avaliador: ${evaluation.avaliador}`}
-        </p>
-      </header>
+      <PrintHeader
+        eyebrow={`Scouting · Avaliação ${evaluation.cadence === "POR_JOGO" ? "por jogo" : "periódica"}`}
+        title={evaluation.prospectName}
+        subtitle={`${evaluation.prospectPositionName ?? "Sem posição"} — avaliação de ${new Date(
+          evaluation.createdAt
+        ).toLocaleDateString("pt-PT")}`}
+        meta={evaluation.avaliador ? [{ label: "Avaliador", value: evaluation.avaliador }] : []}
+      />
 
       <div className="pdf-cols">
         <div className="pdf-col-main">
@@ -151,13 +152,7 @@ export default async function PrintScoutingEvaluationPage({
         </div>
       </div>
 
-      <footer className="kpi-print-footer">
-        <p>
-          Gerado em {geradoEm.toLocaleDateString("pt-PT")} às{" "}
-          {geradoEm.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })} · Documento
-          confidencial
-        </p>
-      </footer>
+      <PrintFooter />
     </div>
   );
 }

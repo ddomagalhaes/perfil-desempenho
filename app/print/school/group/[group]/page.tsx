@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { listGroupSchedules } from "@/lib/data/students";
 import { PrintButton } from "@/components/print/PrintButton";
+import { PrintHeader } from "@/components/print/PrintHeader";
+import { PrintFooter } from "@/components/print/PrintFooter";
 import {
   ExtremesLegend,
   GroupDayTimeline,
@@ -35,12 +37,13 @@ export default async function PrintSchoolGroupPage({
     return (
       <div>
         <PrintButton />
-        <h1>{GROUP_LABELS[group]}</h1>
-        <p style={{ color: "var(--text-muted)" }}>
-          {students.length} aluno{students.length === 1 ? "" : "s"} — por escola — gerado em{" "}
-          {new Date().toLocaleDateString("pt-PT")}
-        </p>
+        <PrintHeader
+          eyebrow="Escolar · Grupo"
+          title={GROUP_LABELS[group]}
+          subtitle={`${students.length} aluno${students.length === 1 ? "" : "s"} — por escola`}
+        />
         <SchoolRoster students={students} linkStudents={false} />
+        <PrintFooter />
       </div>
     );
   }
@@ -51,17 +54,18 @@ export default async function PrintSchoolGroupPage({
   return (
     <div>
       <PrintButton />
-      <h1>{GROUP_LABELS[group]}</h1>
-      <p style={{ color: "var(--text-muted)" }}>
-        {students.length} aluno{students.length === 1 ? "" : "s"} — {scope} — gerado em{" "}
-        {new Date().toLocaleDateString("pt-PT")}
-      </p>
+      <PrintHeader
+        eyebrow="Escolar · Grupo"
+        title={GROUP_LABELS[group]}
+        subtitle={`${students.length} aluno${students.length === 1 ? "" : "s"} — ${scope}`}
+      />
       {v.view === "day" ? (
         <GroupDayTimeline students={students} weekday={v.day} sort={v.sort} linkStudents={false} />
       ) : (
         <GroupWeekTable students={students} days={v.days} linkStudents={false} />
       )}
       {students.length > 0 && <ExtremesLegend />}
+      <PrintFooter />
     </div>
   );
 }

@@ -5,7 +5,9 @@ import { getPositionCompetencies, listPositions } from "@/lib/data/positions";
 import { RadarChart, RADAR_SERIES_COLORS } from "@/components/radar/RadarChart";
 import { ComparisonTable } from "@/components/teams/ComparisonTable";
 import { PrintButton } from "@/components/print/PrintButton";
-import { areaTypeFromSlug, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
+import { PrintHeader } from "@/components/print/PrintHeader";
+import { PrintFooter } from "@/components/print/PrintFooter";
+import { AREA_LABELS, areaTypeFromSlug, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
 
@@ -40,12 +42,11 @@ export default async function PrintComparePage({
     return (
       <div>
         <PrintButton />
-        <h1>Comparação de equipas — {position ? position.name : "posição não escolhida"}</h1>
-        <p style={{ color: "var(--text-muted)" }}>
-          {coloredSeries.map((s) => s.teamName).join(" vs. ")}
-          {position ? ` — médias entre ${position.name}` : ""} — gerado em{" "}
-          {new Date().toLocaleDateString("pt-PT")}
-        </p>
+        <PrintHeader
+          eyebrow={`${AREA_LABELS[area]} · Comparação`}
+          title={`Comparação de equipas — ${position ? position.name : "posição não escolhida"}`}
+          subtitle={coloredSeries.map((s) => s.teamName).join(" vs. ") || undefined}
+        />
         {coloredSeries.length === 0 ? (
           <p className="empty">Nenhuma posição/equipa selecionada.</p>
         ) : (
@@ -54,6 +55,7 @@ export default async function PrintComparePage({
             <ComparisonTable competencies={competencies} series={coloredSeries} />
           </>
         )}
+        <PrintFooter />
       </div>
     );
   }
@@ -69,11 +71,11 @@ export default async function PrintComparePage({
   return (
     <div>
       <PrintButton />
-      <h1>Comparação de equipas</h1>
-      <p style={{ color: "var(--text-muted)" }}>
-        {coloredSeries.map((s) => s.teamName).join(" vs. ")} — gerado em{" "}
-        {new Date().toLocaleDateString("pt-PT")}
-      </p>
+      <PrintHeader
+        eyebrow={`${AREA_LABELS[area]} · Comparação`}
+        title="Comparação de equipas"
+        subtitle={coloredSeries.map((s) => s.teamName).join(" vs. ") || undefined}
+      />
       {coloredSeries.length === 0 ? (
         <p className="empty">Nenhuma equipa selecionada.</p>
       ) : (
@@ -82,6 +84,7 @@ export default async function PrintComparePage({
           <ComparisonTable competencies={competencies} series={coloredSeries} />
         </>
       )}
+      <PrintFooter />
     </div>
   );
 }

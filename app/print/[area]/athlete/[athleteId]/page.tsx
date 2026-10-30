@@ -6,7 +6,9 @@ import { PerformanceWheel } from "@/components/wheel/PerformanceWheel";
 import { ScoreList } from "@/components/athletes/ScoreList";
 import { CompetencyLegend } from "@/components/competencies/CompetencyLegend";
 import { PrintButton } from "@/components/print/PrintButton";
-import { areaTypeFromSlug, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
+import { PrintHeader } from "@/components/print/PrintHeader";
+import { PrintFooter } from "@/components/print/PrintFooter";
+import { AREA_LABELS, areaTypeFromSlug, isTeamAreaSlug, type TeamAreaSlug } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
 
@@ -27,9 +29,9 @@ export default async function PrintAthletePage({
       return (
         <div>
           <PrintButton />
-          <h1>{athlete.name}</h1>
-          <p style={{ color: "var(--text-muted)" }}>{athlete.teamName} — Técnico/Tático</p>
+          <PrintHeader eyebrow={`${AREA_LABELS[area]} · Atleta`} title={athlete.name} subtitle={athlete.teamName} />
           <p className="empty">Este atleta ainda não tem posição atribuída.</p>
+          <PrintFooter />
         </div>
       );
     }
@@ -39,15 +41,16 @@ export default async function PrintAthletePage({
     return (
       <div>
         <PrintButton />
-        <h1>{athlete.name}</h1>
-        <p style={{ color: "var(--text-muted)" }}>
-          {athlete.teamName} — {athlete.positionName} — gerado em{" "}
-          {new Date().toLocaleDateString("pt-PT")}
-        </p>
+        <PrintHeader
+          eyebrow={`${AREA_LABELS[area]} · Atleta`}
+          title={athlete.name}
+          subtitle={`${athlete.teamName} — ${athlete.positionName}`}
+        />
         <PerformanceWheel competencies={competencies} scores={athlete.scores} />
         <ScoreList competencies={competencies} scores={athlete.scores} />
         <h2 style={{ marginTop: 32 }}>Legenda das competências — {athlete.positionName}</h2>
         <CompetencyLegend competencies={competencies} />
+        <PrintFooter />
       </div>
     );
   }
@@ -57,14 +60,12 @@ export default async function PrintAthletePage({
   return (
     <div>
       <PrintButton />
-      <h1>{athlete.name}</h1>
-      <p style={{ color: "var(--text-muted)" }}>
-        {athlete.teamName} — gerado em {new Date().toLocaleDateString("pt-PT")}
-      </p>
+      <PrintHeader eyebrow={`${AREA_LABELS[area]} · Atleta`} title={athlete.name} subtitle={athlete.teamName} />
       <PerformanceWheel competencies={competencies} scores={athlete.scores} />
       <ScoreList competencies={competencies} scores={athlete.scores} />
       <h2 style={{ marginTop: 32 }}>Legenda das competências</h2>
       <CompetencyLegend competencies={competencies} />
+      <PrintFooter />
     </div>
   );
 }
