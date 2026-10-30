@@ -21,6 +21,10 @@
   /* Verde-escuro de acento — só na barra de topo, na faixa de abertura de
      cada área e no separador de área ativo. Nunca como fundo geral. */
   --deep-green: #123524;
+
+  /* Verde médio só para a faixa da página inicial — distinto do --deep-green
+     (barra de topo/painéis) e do --teal (destaques pequenos). */
+  --hero-green: #2d6a4f;
 }
 
 * {
@@ -1576,8 +1580,10 @@ input[type="range"] {
 }
 
 .home-hero {
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--line);
+  background: var(--hero-green);
+  color: #fff;
+  padding: 28px 28px;
+  border-radius: 14px;
 }
 
 .home-eyebrow {
@@ -1586,33 +1592,26 @@ input[type="range"] {
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .home-hero h1 {
   margin: 0;
   font-size: 26px;
   line-height: 1.2;
-}
-
-.home-lead {
-  max-width: 520px;
-  margin: 6px 0 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--text-muted);
+  color: #fff;
 }
 
 .home-stats {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 28px;
-  margin: 16px 0 0;
+  margin: 18px 0 0;
 }
 
 .home-stats dt {
   font-size: 11px;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .home-stats dd {
@@ -1620,7 +1619,7 @@ input[type="range"] {
   font-family: var(--font-jetbrains), monospace;
   font-size: 18px;
   font-weight: 600;
-  color: var(--accent-dark);
+  color: #fff;
 }
 
 /* Página inicial dividida em 4 fatias (uma por área) que expandem para
@@ -1641,8 +1640,9 @@ input[type="range"] {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: var(--surface-1);
-  border: 1px solid var(--line);
+  background: linear-gradient(160deg, var(--hero-green) 0%, var(--deep-green) 100%);
+  color: #fff;
+  border: 1px solid transparent;
   border-radius: 14px;
   overflow: hidden;
   transition:
@@ -1656,7 +1656,31 @@ input[type="range"] {
   border-color: var(--teal);
 }
 
+/* Ícone da área, bem ampliado, como marca d'água — sem fotos reais ainda,
+   isto dá aos painéis um ar de "cartaz" em vez de um retângulo vazio. */
+.area-panel-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+.area-panel-bg svg {
+  width: 78%;
+  height: 78%;
+  max-width: 320px;
+  max-height: 320px;
+  stroke-width: 1;
+}
+
 .area-panel-summary {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1679,7 +1703,7 @@ input[type="range"] {
 }
 
 .area-panel-summary:focus-visible {
-  outline: 2px solid var(--accent-dark);
+  outline: 2px solid #fff;
   outline-offset: -2px;
 }
 
@@ -1691,8 +1715,8 @@ input[type="range"] {
   height: 38px;
   flex-shrink: 0;
   border-radius: 10px;
-  background: var(--teal-dim);
-  color: var(--accent-dark);
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
 }
 
 .area-panel-icon svg {
@@ -1707,9 +1731,12 @@ input[type="range"] {
   letter-spacing: 0.02em;
   white-space: normal;
   min-width: 0;
+  color: #fff;
 }
 
 .area-panel-body {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-rows: minmax(0, 0fr);
   min-height: 0;
@@ -1736,14 +1763,14 @@ input[type="range"] {
   margin: 0;
   font-size: 13px;
   line-height: 1.5;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .area-panel-stat {
   margin: 0;
   font-family: var(--font-jetbrains), monospace;
   font-size: 12px;
-  color: var(--accent-dark);
+  color: var(--teal);
 }
 
 .area-panel-links {
@@ -1759,26 +1786,27 @@ input[type="range"] {
   border-radius: 999px;
   font-size: 12px;
   text-decoration: none;
-  color: var(--text-muted);
-  border: 1px solid var(--line);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .area-panel-links a:hover {
-  background: var(--teal-dim);
-  border-color: var(--teal);
-  color: var(--accent-dark);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
 }
 
 .area-panel-links .area-panel-cta {
-  background: var(--deep-green);
-  color: #fff;
-  border-color: var(--deep-green);
+  background: #fff;
+  color: var(--deep-green);
+  border-color: #fff;
+  font-weight: 600;
 }
 
 .area-panel-links .area-panel-cta:hover {
-  background: var(--accent-dark);
-  border-color: var(--accent-dark);
-  color: #fff;
+  background: var(--teal);
+  border-color: var(--teal);
+  color: var(--deep-green);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2017,26 +2045,6 @@ input[type="range"] {
   margin: 0;
   font-size: 13px;
   line-height: 1.5;
-}
-
-.compare-notes {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.compare-note-row {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: 12.5px;
-}
-
-.compare-note-row strong {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
 }
 
 .athlete-open-last-eval {

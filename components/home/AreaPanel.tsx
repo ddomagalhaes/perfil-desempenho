@@ -55,6 +55,10 @@ export function AreaPanel({ id, href, icon, title, description, stat, links }: A
         }
       }}
     >
+      <div className="area-panel-bg" aria-hidden="true">
+        {icon}
+      </div>
+
       <button
         type="button"
         className="area-panel-summary"

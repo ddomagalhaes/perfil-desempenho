@@ -118,12 +118,8 @@ export default async function Home() {
     <main className="home">
       <ScrollReveal>
         <section className="home-hero">
-          <p className="home-eyebrow">Departamento de Formação</p>
+          <p className="home-eyebrow">Departamento de Psicologia</p>
           <h1>Perfil de Desempenho</h1>
-          <p className="home-lead">
-            Um só sítio para acompanhar o perfil psicológico, técnico/tático, o scouting e a vida
-            escolar dos atletas.
-          </p>
           {stats && (
             <dl className="home-stats">
               <div>
