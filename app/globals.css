@@ -614,7 +614,7 @@ tr.range td {
 }
 
 .kpi-print-handwrite {
-  min-height: 50mm;
+  min-height: 20mm;
   border: 1px solid var(--line);
   border-radius: 4px;
 }
@@ -2261,6 +2261,42 @@ input[type="range"] {
      longa no papel do que no ecrã, onde o rato/scroll ajudam. */
   tbody tr:nth-child(even) td {
     background: #f7f9f7 !important;
+  }
+
+  /* Com duas tabelas de pontuação no mesmo documento, o conteúdo já não cabe
+     sempre numa só página A4 — isto garante que nunca corta uma linha, um
+     cartão ou o cabeçalho a meio, só a transição entre secções inteiras. */
+  .print-header,
+  tr,
+  .pdf-score-table h2,
+  .kpi-print-context,
+  .pdf-summary-card,
+  .kpi-print-notes,
+  .pdf-legend-grid > div {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .print-header {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .pdf-score-table h2 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* As duas colunas (tabela + contexto/resumo) são lado a lado no ecrã, mas
+     na impressão a grelha não pagina bem — a coluna da direita pode ficar
+     cortada a meio em vez de continuar na página seguinte. Em impressão
+     ficam empilhadas, a fluir normalmente de página para página. */
+  .pdf-cols {
+    display: block;
+  }
+
+  .pdf-col-side {
+    margin-top: 20px;
   }
 }
 
