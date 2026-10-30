@@ -6,7 +6,6 @@ import type { GameContext } from "@/lib/scouting-kpi/types";
 import { KPIS_PERIODICAS, KPIS_POR_JOGO } from "@/lib/scouting-kpi/kpiData";
 import { SaveStatus, type SaveState } from "@/components/layout/SaveStatus";
 import { useGlobalSaveStatus } from "@/components/layout/SaveStatusProvider";
-import { useLocalStorageValue } from "@/lib/useLocalStorageValue";
 import { PerGameFields } from "./PerGameFields";
 import { PeriodicFields } from "./PeriodicFields";
 
@@ -14,21 +13,21 @@ interface Props {
   prospectId: string;
   context: GameContext;
   periodoLabel: string;
+  /** Nome de quem tem sessão iniciada — pré-preenche o avaliador, continua
+   * editável para o caso de alguém estar a avaliar em nome de outra pessoa. */
+  avaliadorInicial: string;
 }
-
-const USER_NAME_KEY = "perfil-desempenho:nome-utilizador";
 
 /** Uma sessão de avaliação = por jogo + periódica + notas partilhadas,
  * gravadas juntas num só "Guardar avaliação" — deixou de haver separadores
  * porque as duas cadências passaram a fazer parte do mesmo PDF. */
-export function EvaluationForm({ prospectId, context, periodoLabel }: Props) {
+export function EvaluationForm({ prospectId, context, periodoLabel, avaliadorInicial }: Props) {
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const router = useRouter();
   const globalSaveStatus = useGlobalSaveStatus();
 
-  const storedName = useLocalStorageValue(USER_NAME_KEY);
   const [avaliadorOverride, setAvaliadorOverride] = useState<string | null>(null);
-  const avaliador = avaliadorOverride ?? storedName ?? "";
+  const avaliador = avaliadorOverride ?? avaliadorInicial;
 
   const [jogoContext, setJogoContext] = useState<GameContext>(context);
   const [jogoScores, setJogoScores] = useState<Record<string, number>>(

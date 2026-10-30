@@ -13,7 +13,7 @@ const TOPBAR_SAVE_LABEL: Record<SaveState, string> = {
   error: "Erro ao guardar",
 };
 
-export function AppTopBar() {
+export function AppTopBar({ userName }: { userName: string | null }) {
   const { state } = useGlobalSaveStatus();
 
   return (
@@ -29,7 +29,7 @@ export function AppTopBar() {
 
       <AthleteSearch />
 
-      <UserBadge />
+      <UserBadge userName={userName} />
     </div>
   );
 }

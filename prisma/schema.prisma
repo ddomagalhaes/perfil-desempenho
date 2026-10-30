@@ -16,6 +16,20 @@ enum AreaType {
   SCOUTING
 }
 
+// Conta de login — uma por pessoa (psicólogo, scout, etc.). A password nunca
+// é guardada em texto plano, só o hash (bcrypt). O "avaliador" nas avaliações
+// de scouting passa a vir daqui (name) em vez do nome gravado só no browser.
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("users")
+}
+
 model Competency {
   id            String               @id @default(uuid())
   area          AreaType

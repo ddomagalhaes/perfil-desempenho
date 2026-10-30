@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { auth } from "@/auth";
 import { getProspectDetail } from "@/lib/data/prospects";
 import { listEvaluations } from "@/lib/data/scoutingEvaluations";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -16,9 +17,10 @@ export default async function ProspectEvaluatePage({
   params: Promise<{ prospectId: string }>;
 }) {
   const { prospectId } = await params;
-  const [prospect, history] = await Promise.all([
+  const [prospect, history, session] = await Promise.all([
     getProspectDetail(prospectId),
     listEvaluations(prospectId),
+    auth(),
   ]);
   if (!prospect) notFound();
 
@@ -52,7 +54,12 @@ export default async function ProspectEvaluatePage({
           </>
         }
       />
-      <EvaluationForm prospectId={prospect.id} context={context} periodoLabel="últimos 5 jogos" />
+      <EvaluationForm
+        prospectId={prospect.id}
+        context={context}
+        periodoLabel="últimos 5 jogos"
+        avaliadorInicial={session?.user?.name ?? ""}
+      />
       <Panel title="Histórico de avaliações">
         <EvaluationHistory entries={history} />
       </Panel>
