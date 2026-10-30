@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, Inter, JetBrains_Mono } from "next/font/google";
 import { SaveStatusProvider } from "@/components/layout/SaveStatusProvider";
 import "./globals.css";
@@ -25,6 +25,14 @@ export const metadata: Metadata = {
   title: "Perfil de Desempenho",
   description:
     "Perfil psicológico, técnico/tático, scouting e horários escolares dos atletas.",
+  appleWebApp: {
+    title: "Perfil",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#2d6a4f",
 };
 
 export default function RootLayout({
