@@ -1,7 +1,9 @@
+import { auth } from "@/auth";
 import { getOverviewStats } from "@/lib/data/overview";
 import { ExpandableRowGroup } from "@/components/ui/ExpandableRowGroup";
 import { AreaPanel } from "@/components/home/AreaPanel";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { UserBadge } from "@/components/layout/UserBadge";
 
 export const dynamic = "force-dynamic";
 
@@ -62,7 +64,7 @@ function plural(n: number, one: string, many: string) {
 }
 
 export default async function Home() {
-  const stats = await getOverviewStats();
+  const [stats, session] = await Promise.all([getOverviewStats(), auth()]);
 
   const sections: Section[] = [
     {
@@ -118,6 +120,9 @@ export default async function Home() {
     <main className="home">
       <ScrollReveal>
         <section className="home-hero">
+          <div className="home-hero-user">
+            <UserBadge userName={session?.user?.name ?? null} />
+          </div>
           <p className="home-eyebrow">Departamento de Psicologia</p>
           <h1>Perfil de Desempenho</h1>
           {stats && (
