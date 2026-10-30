@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { EvaluationCadence } from "@/app/generated/prisma/enums";
 import { KPIS, bandaParaValor, scorePonderado, KPIS_POR_JOGO, KPIS_PERIODICAS } from "@/lib/scouting-kpi/kpiData";
 import type { EvaluationHistoryEntry } from "@/lib/data/scoutingEvaluations";
@@ -113,7 +114,16 @@ export function EvaluationHistory({ entries }: { entries: EvaluationHistoryEntry
                   </div>
                 </div>
               }
-              open={<CompetencyBars bars={bars} />}
+              open={
+                <div className="athlete-open">
+                  <CompetencyBars bars={bars} />
+                  <div className="athlete-open-actions">
+                    <Link href={`/print/scouting/evaluation/${entry.id}`} target="_blank">
+                      Gerar PDF
+                    </Link>
+                  </div>
+                </div>
+              }
             />
           ))}
         </ExpandableRowGroup>
