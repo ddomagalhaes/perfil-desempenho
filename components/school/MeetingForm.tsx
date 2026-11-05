@@ -9,9 +9,27 @@ import type { SchoolMeetingDetailDTO } from "@/lib/school/meetings";
 export type RosterEntry = {
   id: string;
   name: string;
+  school: string;
   classLabel: string;
   scheduleHint: string;
 };
+
+/** Agrupa o roster por escola (ordem alfabética), para ser mais fácil
+ * encontrar os alunos de uma escola em concreto ao escrever as notas. */
+function groupBySchool(roster: RosterEntry[]): { school: string; students: RosterEntry[] }[] {
+  const bySchool = new Map<string, RosterEntry[]>();
+  for (const s of roster) {
+    const key = s.school || "Sem escola definida";
+    if (!bySchool.has(key)) bySchool.set(key, []);
+    bySchool.get(key)!.push(s);
+  }
+  return [...bySchool.keys()]
+    .sort((a, b) => a.localeCompare(b, "pt"))
+    .map((school) => ({
+      school,
+      students: bySchool.get(school)!.sort((a, b) => a.name.localeCompare(b.name, "pt")),
+    }));
+}
 
 type Props =
   | { mode: "create"; group: SchoolGroup; roster: RosterEntry[] }
@@ -114,6 +132,7 @@ export function MeetingForm(props: Props) {
 
   const rosterIds = new Set(roster.map((s) => s.id));
   const filledCount = roster.filter((s) => (form.notes[s.id] ?? "").trim()).length;
+  const bySchool = groupBySchool(roster);
 
   async function handleSave() {
     setSaveState("saving");
@@ -203,20 +222,25 @@ export function MeetingForm(props: Props) {
         {roster.length === 0 && <p className="empty">Sem alunos ativos neste grupo.</p>}
         {roster.length > 0 && (
           <div className="meeting-roster">
-            {roster.map((s) => (
-              <div className="meeting-roster-row" key={s.id}>
-                <div className="meeting-roster-row-info">
-                  <strong>{s.name}</strong>
-                  <span className="meeting-roster-row-meta">
-                    {[s.classLabel, s.scheduleHint].filter(Boolean).join(" · ") || "—"}
-                  </span>
-                </div>
-                <textarea
-                  rows={2}
-                  value={form.notes[s.id] ?? ""}
-                  onChange={(e) => updateNote(s.id, e.target.value)}
-                  placeholder="Sem nota"
-                />
+            {bySchool.map(({ school, students }) => (
+              <div className="meeting-roster-school-group" key={school}>
+                <h3 className="meeting-roster-school-heading">{school}</h3>
+                {students.map((s) => (
+                  <div className="meeting-roster-row" key={s.id}>
+                    <div className="meeting-roster-row-info">
+                      <strong>{s.name}</strong>
+                      <span className="meeting-roster-row-meta">
+                        {[s.classLabel, s.scheduleHint].filter(Boolean).join(" · ") || "—"}
+                      </span>
+                    </div>
+                    <textarea
+                      rows={2}
+                      value={form.notes[s.id] ?? ""}
+                      onChange={(e) => updateNote(s.id, e.target.value)}
+                      placeholder="Sem nota"
+                    />
+                  </div>
+                ))}
               </div>
             ))}
           </div>

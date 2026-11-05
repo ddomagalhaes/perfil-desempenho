@@ -22,6 +22,7 @@ export default async function MeetingPage({
   const roster: RosterEntry[] = schedules.map((s) => ({
     id: s.id,
     name: s.name,
+    school: s.school,
     classLabel: studentClassLabel(s),
     scheduleHint: scheduleHint(s.slots),
   }));
