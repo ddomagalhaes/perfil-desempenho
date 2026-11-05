@@ -173,6 +173,20 @@ export function daySpan(slots: SlotDTO[], weekday: number): { start: number; end
   return { start: intervals[0].start, end: intervals[intervals.length - 1].end };
 }
 
+/** Resumo compacto do horário de um aluno (entrada mais cedo e saída mais
+ * tarde entre todos os dias) para mostrar junto do nome em listas, ex.: no
+ * ecrã de reuniões escolares. "" se o aluno não tiver aulas marcadas. */
+export function scheduleHint(slots: SlotDTO[]): string {
+  let earliest: number | null = null;
+  let latest: number | null = null;
+  for (const slot of slots) {
+    if (slot.kind !== "LESSON" || Object.keys(slot.lessons).length === 0) continue;
+    if (earliest === null || slot.startMin < earliest) earliest = slot.startMin;
+    if (latest === null || slot.endMin > latest) latest = slot.endMin;
+  }
+  return earliest === null || latest === null ? "" : formatRange(earliest, latest);
+}
+
 /** Entrada mais cedo e saída mais tarde de um conjunto de alunos num dia,
  * para destacar os extremos na vista de grupo. */
 export function dayExtremes(

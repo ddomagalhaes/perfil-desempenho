@@ -5,11 +5,13 @@ import {
   listAthletesForStudentLinking,
   listStudents,
 } from "@/lib/data/students";
+import { listStudentMeetingTimeline } from "@/lib/data/schoolMeetings";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StudentInfoForm } from "@/components/school/StudentInfoForm";
 import { CopySchedulePanel } from "@/components/school/CopySchedulePanel";
 import { SlotEditor } from "@/components/school/SlotEditor";
 import { ScheduleEditor } from "@/components/school/ScheduleEditor";
+import { MeetingTimeline } from "@/components/school/MeetingTimeline";
 import { GROUP_LABELS, SLUG_BY_GROUP, studentClassLabel } from "@/lib/school/schedule";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +28,7 @@ export default async function StudentPage({
     listStudents(),
   ]);
   if (!student) notFound();
+  const meetingTimeline = await listStudentMeetingTimeline(studentId);
 
   const schools = [...new Set(allStudents.map((s) => s.school).filter(Boolean))].sort();
   const others = allStudents.filter((s) => s.id !== student.id);
@@ -71,6 +74,8 @@ export default async function StudentPage({
             slots={student.slots}
             includeSaturday={student.includeSaturday}
           />
+          <h2 style={{ marginTop: 24 }}>Notas de reuniões escolares</h2>
+          <MeetingTimeline entries={meetingTimeline} />
         </div>
       </div>
     </>

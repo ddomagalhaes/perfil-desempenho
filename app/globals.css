@@ -2747,3 +2747,52 @@ input[type="number"].compact {
     break-inside: avoid;
   }
 }
+
+/* Reuniões escolares — roster com nota por aluno */
+.meeting-roster {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.meeting-roster-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 1fr) 2fr;
+  gap: 12px;
+  align-items: start;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.meeting-roster-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.meeting-roster-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding-top: 8px;
+}
+
+.meeting-roster-row-info strong {
+  font-size: 13.5px;
+}
+
+.meeting-roster-row-meta {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.meeting-roster-row textarea {
+  min-height: 56px;
+}
+
+@media (max-width: 720px) {
+  .meeting-roster-row {
+    grid-template-columns: 1fr;
+  }
+}

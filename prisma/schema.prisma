@@ -216,6 +216,7 @@ model Student {
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   slots           TimeSlot[]
+  meetingNotes    StudentMeetingNote[]
 
   @@index([group])
   @@map("students")
@@ -245,4 +246,40 @@ model Lesson {
 
   @@id([slotId, weekday])
   @@map("lessons")
+}
+
+// Reunião com a escola de um aluno (normalmente cobre vários alunos do mesmo
+// grupo, numa só visita). Os metadados do encontro ficam aqui; a nota de cada
+// aluno fica em StudentMeetingNote — um aluno sem nota não gera registo, por
+// isso não há FK direta para Student aqui, só através das notas.
+model SchoolMeeting {
+  id           String               @id @default(uuid())
+  date         DateTime
+  group        SchoolGroup
+  school       String               @default("")
+  withWhom     String               @default("") // com quem reuniu, texto livre
+  note         String               @default("") // nota geral da reunião, não específica de nenhum aluno
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  studentNotes StudentMeetingNote[]
+
+  @@index([group, date])
+  @@map("school_meetings")
+}
+
+// Nota de um aluno específico numa reunião escolar. Dados confidenciais de
+// menores: nunca entram em exportações/PDFs (ver lib/data/schoolMeetings.ts).
+model StudentMeetingNote {
+  id        String        @id @default(uuid())
+  meetingId String
+  meeting   SchoolMeeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  studentId String
+  student   Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  note      String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@unique([meetingId, studentId])
+  @@index([studentId])
+  @@map("student_meeting_notes")
 }

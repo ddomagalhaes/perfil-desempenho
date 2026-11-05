@@ -36,6 +36,7 @@ export function NavBar() {
       ? [
           { href: "/school/groups/pousada", label: "Pousada" },
           { href: "/school/groups/uaare", label: "UAARE" },
+          { href: "/school/meetings", label: "Reuniões" },
         ]
       : section === "scouting"
         ? [
